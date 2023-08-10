@@ -1,0 +1,24 @@
+{% extends 'layout.html' %} 
+{% load static %}
+{% block title %} Room {% endblock title %} 
+
+{% block content %} 
+<main>
+    <section id="room-name-wrapper">
+        <p>Room Name:<span id="room-name"></span></p>
+    </section>
+
+    <section id="video-streams"> </section>
+
+    <section id="controls-wrapper">
+        <div class="icon-wrapper">
+            <img id="mic-btn" class="control-icon" src="{% static 'images/mic.png' %}"/>
+            <img id="camera-btn" class="control-icon" src="{% static 'images/video.png' %}"/>
+            <img id="leave-btn" class="control-icon" src="{% static 'images/leave.jpg' %}"/>
+        </div>
+    </section>
+
+</main>
+<script type="text/javascript" src="{% static 'js/AgoraRTC_N-4.18.2.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/room.js' %}"></script>
+{% endblock content %}
