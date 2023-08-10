@@ -4,6 +4,19 @@
 
 {% block content %} 
 <form action="" method="post">
-    {% csrf_token %} 
+    {% csrf_token %}
+    <label>username </label>
+    <input type="text" name="username" required/> 
+    <label>password </label>
+    <input type="password" name="password" required/> 
+    <button type="submit">Signup</button>
 </form>
+
+{% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
 {% endblock content %}
