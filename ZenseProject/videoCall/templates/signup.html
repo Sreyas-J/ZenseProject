@@ -1,8 +1,4 @@
-{% extends 'layout.html' %} 
-
-{% block title %} Signup {% endblock title %}
-
-{% block content %} 
+ 
 <form action="" method="post">
     {% csrf_token %}
     <label>username </label>
@@ -19,4 +15,3 @@
         {% endfor %}
     </ul>
 {% endif %}
-{% endblock content %}

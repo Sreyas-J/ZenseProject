@@ -4,15 +4,16 @@ from django.contrib.auth.models import User
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from .models import *
 
 from agora_token_builder import RtcTokenBuilder
 import random
 import time
 
-def Token(request):
+def Token(request,group):
     Id='41a16d737c284fadb182676757e070ab'
     certificate='49a7c4370085482f84c8e839e79ff023'
-    channel=request.GET.get('channel')
+    channel=group
     uid=random.randint(1,230)
     expirationTime=3600*24
     timeStamp=time.time()
@@ -23,13 +24,14 @@ def Token(request):
     token = RtcTokenBuilder.buildTokenWithUid(Id, certificate, channel, uid, role, privilegeExpiredTs)
     return JsonResponse({'token':token,'uid':uid},safe=False)
 
-@login_required(login_url='/signup/') 
+@login_required(login_url='signup') 
 def home(request):
-    return render(request,'home.html')
+    profile=Profile.objects.get(user=request.user)
+    return render(request,'home.html',{'groups':profile.groups.all()})
 
-@login_required(login_url='/signup/') 
-def room(request):
-    return render(request,'room.html')
+@login_required(login_url='signup') 
+def room(request,group):
+    return render(request,'room.html',{'room':group})
 
 def signup(request):
     if request.method=='POST':
@@ -40,7 +42,8 @@ def signup(request):
             return redirect('signup')
         except:
             password=request.POST.get('password')
-            user=User.objects.create(username=username,password=password)
+            user = User.objects.create_user(username=username, password=password)
+            Profile.objects.create(user=user)
             login(request,user)
             return redirect('home')
 
@@ -61,3 +64,6 @@ def loginPage(request):
             return render(request, 'login.html', {'error_message': 'Invalid credentials.'})
     
     return render(request, 'login.html')
+
+def lobby(request,group):
+    return render(request,'lobby.html',{'room':group})
