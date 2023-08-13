@@ -11,7 +11,7 @@
 <img src="{% static 'images/icon.png' %}" id="logo"/>
 <div id="welcome-message">
     <h1>Welcome to</h1><b>{{room}}</b>
-    <p>Group video calling app</p>
+    <p>{{user.username}}</p>
 </div>
 
 <form id="form">
@@ -30,6 +30,7 @@ let handleSubmit = async (e) => {
     e.preventDefault();
     
     let room = welcomeMessage.querySelector('b').textContent;
+    let name= welcomeMessage.querySelector('p').textContent;
     let response = await fetch(`get_token/?channel=${room}`);
     let data = await response.json();
     let UID = data.uid;
@@ -37,6 +38,7 @@ let handleSubmit = async (e) => {
     sessionStorage.setItem('UID', UID);
     sessionStorage.setItem('token', token);
     sessionStorage.setItem('room', room);
+    sessionStorage.setItem('name', name);
     window.open(`/room/${room}/`, '_self');
 };
 form.addEventListener('submit', handleSubmit);

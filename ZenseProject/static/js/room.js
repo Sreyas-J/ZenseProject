@@ -2,6 +2,7 @@ const APP_ID="41a16d737c284fadb182676757e070ab"
 const CHANNEL=sessionStorage.getItem('room')
 const TOKEN=sessionStorage.getItem('token')
 let UID=Number(sessionStorage.getItem('UID'))
+let NAME=sessionStorage.getItem('name')
 
 const client=AgoraRTC.createClient({mode:'rtc',codec:'vp8'})
 let localTracks=[]
@@ -21,8 +22,11 @@ let joinAndDisplayLocalStream=async()=>{
     }
 
     localTracks=await AgoraRTC.createMicrophoneAndCameraTracks()
+
+    let member=createMember()
+
     let player=`<div class="video-container" id="user-container-${UID}">
-                    <div class="username-wrapper"><span class="user-name">My name</span></div>
+                    <div class="username-wrapper"><span class="user-name"></span></div>
                     <div class="video-player" id="user-${UID}"></div>
                 </div>`
     document.getElementById('video-streams').insertAdjacentHTML('beforeend',player)
@@ -66,7 +70,7 @@ let leave=async()=>{
             localTracks[i].close()
         }
     await client.leave()
-    window.open('/','_self')
+    window.open('/home/','_self')
 }
 
 let camera=async(e)=>{
@@ -87,6 +91,35 @@ let audio=async(e)=>{
         await localTracks[0].setMuted(true)
         e.target.style.backgroundColor='rgb(255,80,80,1)'
     }
+}
+
+let createMember = async () => {
+    let response = await fetch('/create_member/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({'name': NAME, 'room_name': CHANNEL, 'UID': UID}),
+    });
+
+    let member = await response.json();
+    return member;
+};
+
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === name + '=') {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
 }
 
 joinAndDisplayLocalStream()

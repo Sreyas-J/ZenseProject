@@ -5,6 +5,8 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from .models import *
+import json
+from django.views.decorators.csrf import csrf_exempt
 
 from agora_token_builder import RtcTokenBuilder
 import random
@@ -66,4 +68,16 @@ def loginPage(request):
     return render(request, 'login.html')
 
 def lobby(request,group):
-    return render(request,'lobby.html',{'room':group})
+    return render(request,'lobby.html',{'room':group,'user':request.user})
+
+@csrf_exempt
+def createMember(request):
+    data=json.loads(request.body)
+
+    member,created=RoomMember.objects.get_or_create(
+        name=Profile.objects.get(user__username=data['name']),
+        uid=data['UID'],
+        room=data['room_name']
+    )
+
+    return JsonResponse({'name':data['name']},safe=False)

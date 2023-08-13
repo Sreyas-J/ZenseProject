@@ -17,3 +17,11 @@ class Profile(models.Model):
     
     def __str__(self):
         return self.user.username
+    
+class RoomMember(models.Model):
+    name=models.ForeignKey(Profile,related_name='room',on_delete=models.CASCADE)
+    uid=models.CharField(max_length=5)
+    room=models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name.user.username
