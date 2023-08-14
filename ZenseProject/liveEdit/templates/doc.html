@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+</head>
+<body>
+    <div id="editor"></div>
+    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+    <script type="text/javascript">
+        var quill = new Quill('#editor', {
+            theme: 'snow'
+        });
+
+        let url =`ws://${window.location.host}/ws/doc/`
+        const socket=new WebSocket(url)
+
+        socket.onmessage=function(event){
+            const data = JSON.parse(event.data);
+            quill.setContents(data.content);
+
+        }
+
+        quill.on('text-change', function(delta, oldDelta, source) {
+             if (source === 'user') {
+                 socket.send(JSON.stringify({ content: quill.getContents() }));
+             }
+         });
+
+        // const socket = new WebSocket(`ws://127.0.0.1/ws/doc/1/`);
+
+        // socket.onmessage = function(event) {
+        //     try {
+        //         const data = JSON.parse(event.data);
+        //         quill.setContents(data.content);
+        //     } catch (error) {
+        //         console.error('Error parsing JSON:', error);
+        //     }
+        // };
+
+        // quill.on('text-change', function(delta, oldDelta, source) {
+        //     if (source === 'user') {
+        //         socket.send(JSON.stringify({ content: quill.getContents() }));
+        //     }
+        // });
+
+    </script>
+</body>
+</html>
