@@ -5,7 +5,7 @@ from liveEdit.models import Document
 class Group(models.Model):
     name=models.CharField(max_length=100,primary_key=True)
     created = models.DateTimeField(auto_now_add=True)
-    doc=models.ManyToManyField(Document,related_name='group')
+    doc=models.ManyToManyField(Document,related_name='groups')
 
     class Meta:
         ordering = ['-created']
