@@ -23,7 +23,7 @@
         socket.onmessage = function (e) {
             try {
                 let data = JSON.parse(e.data);
-                quill.setText(data.content,'api');
+                quill.setContents(data.content,'api');
                 
                 console.log(data.content);
             } catch (error) {

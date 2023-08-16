@@ -28,7 +28,7 @@ class EditConsumer(AsyncWebsocketConsumer):
 
         if self.document.content:
             content_data = json.loads(self.document.content)
-            first_insert = content_data['ops'][0]['insert']
+            first_insert = content_data['ops']
             print(first_insert)  # Now you can safely print the first insert
             await self.send(text_data=json.dumps({
                 'content': first_insert
