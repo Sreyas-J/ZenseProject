@@ -3,5 +3,5 @@ from django.urls import path
 from . import views
 
 urlpatterns=[
-    path('',views.doc,name='doc'),
+    path('<str:group>/<str:doc>/',views.doc,name='doc'),
 ]

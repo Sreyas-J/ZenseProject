@@ -9,8 +9,8 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
-    'channels',
-    "daphne",
+     'channels',
+     "daphne",
 
     'django.contrib.admin',
     'django.contrib.auth',
@@ -23,7 +23,7 @@ INSTALLED_APPS = [
     'liveEdit',
 ]
 
-ASGI_APPLICATION= 'ZenseProject.asgi.application'
+ASGI_APPLICATION='ZenseProject.asgi.application'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
