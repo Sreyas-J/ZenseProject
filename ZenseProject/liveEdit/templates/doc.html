@@ -3,12 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<<<<<<< HEAD
     <title>Editor</title>
+=======
+    <title>Live Editor</title>
+>>>>>>> 193076cf095e1cf2b4ad889d7eb75c93e4744e43
     <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
 </head>
 <body>
     <div id="editor"></div>
     <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+<<<<<<< HEAD
     <script>
         let url=`ws://${window.location.host}/ws/doc/`
         const socket= new WebSocket(url)
@@ -16,6 +21,27 @@
             let data=JSON.parse(e.data)
             console.log('Data: ',data)
         }
+=======
+    <script type="text/javascript">
+        var quill = new Quill('#editor', {
+            theme: 'snow'
+        });
+
+        let url =`ws://${window.location.host}/ws/doc/Trial/Doc/`
+        const socket=new WebSocket(url)
+
+        socket.onmessage=function(event){
+            const data = JSON.parse(event.data);
+            quill.updateContents(data.delta);
+
+        }
+
+        quill.on('text-change', function(delta, oldDelta, source) {
+             if (source === 'user') {
+                socket.send(JSON.stringify({ delta: delta }));
+             }
+         });
+>>>>>>> 193076cf095e1cf2b4ad889d7eb75c93e4744e43
     </script>
 
 </body>
