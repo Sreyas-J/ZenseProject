@@ -21,15 +21,26 @@
         const socket = new WebSocket(url)
 
         socket.onmessage = function (e) {
-            try {
-                let data = JSON.parse(e.data);
+            
+            let data = JSON.parse(e.data);
+            if(data.content){
                 quill.setContents(data.content,'api');
-                
-                console.log(data.content);
-            } catch (error) {
-                console.error("Error while processing data:", error);
+            }else if(data.delta){
+                quill.updateContents(data.delta)
             }
+
+            console.log(data);            
         };
+
+        quill.on('text-change', function (delta, oldDelta, source) {
+            if (source === 'user') {
+                socket.send(JSON.stringify({ 
+                    delta: delta,
+                    content:quill.getContents()
+                 }));
+                 console.log(delta,' ',quill.getContents())
+            }
+        });
     </script>
 
 </body>

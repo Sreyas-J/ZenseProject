@@ -29,10 +29,11 @@ class EditConsumer(AsyncWebsocketConsumer):
         if self.document.content:
             content_data = json.loads(self.document.content)
             first_insert = content_data['ops']
-            print(first_insert)  # Now you can safely print the first insert
+            print(first_insert)
             await self.send(text_data=json.dumps({
                 'content': first_insert
             }))
+
 
     @database_sync_to_async
     def doc_query(self):
@@ -44,3 +45,37 @@ class EditConsumer(AsyncWebsocketConsumer):
             grp.doc.add(document)  # Associate the document with the group
 
         return document
+    
+    async def receive(self, text_data):
+        data = json.loads(text_data)
+        delta=data['delta']
+        # Check if the sender's channel name is the same as the current channel name            
+        await self.channel_layer.group_send(
+            self.room_group_name,
+            {
+                'type': 'document_content',
+                'delta': delta,
+                'exclude_channel':self.channel_name
+            }
+        )
+
+        await self.update_doc(data['content'])
+
+    @database_sync_to_async
+    def update_doc(self, content):
+        content_json = json.dumps(content)
+        updated_content_json = content_json.replace("'", "\"")
+        self.document.content = updated_content_json
+        print(self.document.content)
+        self.document.save()
+
+
+    async def document_content(self, event):
+        delta = event['delta']
+        exclude_channel = event.get('exclude_channel')
+
+        if exclude_channel != self.channel_name:
+            # Send the message only to channels that are not excluded
+            await self.send(text_data=json.dumps({
+                'delta': delta
+            }))
