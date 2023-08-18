@@ -36,6 +36,50 @@ def room(request,group):
     grp=Group.objects.get(name=group)
     return render(request,'room.html',{'group':grp})
 
+@login_required(login_url='videoCall:login')
+def addMember(request, group):
+    grp = Group.objects.get(name=group)
+
+    if request.method=='POST':
+        name=request.POST.get('member')
+        profile=Profile.objects.get(user__username=name)
+
+        if grp in profile.groups.all():
+            messages.error(request,f'{name} is already in {group}')
+            return redirect('videoCall:home')
+
+        profile.groups.add(grp)
+        profile.save()
+
+        messages.success(request,f'{name} has been added to {group}')
+        return redirect('videoCall:home')
+
+    return render(request,'addMember.html',{'profiles':Profile.objects.exclude(groups=grp)})
+
+@login_required(login_url='videoCall:login')
+def addDoc(request,group):
+    grp=Group.objects.get(name=group)
+    profile=Profile.objects.get(user=request.user)
+
+    if grp not in profile.groups.all():
+        messages.error(request,f"You aren't a member of {group}")
+        return redirect('videoCall:home')
+    
+    if request.method=="POST":
+        doc_name=request.POST.get('document')
+        try:
+            Document.objects.get(name=doc_name,groups=grp)
+        except:
+            document=Document.objects.create(name=doc_name)
+            grp.doc.add(document)
+            grp.save()
+            messages.success(request,f"{doc_name} has been created in {group}")
+            return redirect('videoCall:home')
+        messages.error(request,f"Document with name:{doc_name} already exists in the group")
+        return redirect('videoCall:addDoc',group=group)
+
+    return render(request,'addDoc.html',{'group':grp})
+
 def signup(request):
     if request.method=='POST':
         username=request.POST.get('username')

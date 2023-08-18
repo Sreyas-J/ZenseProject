@@ -5,6 +5,15 @@
 {% block style %}
 
 <style>
+    .document {
+        flex: 1;
+        padding: 10px;
+        border: 1px solid #ccc;
+        background-color: rgba(118, 114, 114, 0.983);
+        /* Use rgba format with transparency */
+        margin-right: 10px;
+    }
+
     .card {
         border: 1px solid #ccc;
         border-radius: 5px;
@@ -13,28 +22,136 @@
         margin-left: 100px;
         margin-right: 100px;
         text-align: center;
-        background-color: #f7f7f7;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         transition: transform 0.2s;
+        position: relative;
+    }
+
+    .add-member-link {
+        position: absolute;
+        background-color: rgb(0, 255, 183);
+        top: 10px;
+        right: 10px;
+        color: white;
+        padding: 5px 10px;
+        text-decoration: none;
+        border-radius: 3px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .add-doc-link {
+        position: absolute;
+        background-color: rgb(0, 255, 183);
+        top: 10px;
+        left: 10px;
+        color: white;
+        padding: 5px 10px;
+        text-decoration: none;
+        border-radius: 3px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
 
     .card a {
         text-decoration: none;
         color: #333;
     }
+
+    .messages {
+        list-style: none;
+        padding: 0;
+        margin: 10px;
+        text-align: center;
+    }
+
+    .messages p {
+        margin: 5px;
+        padding: 10px;
+        border-radius: 5px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .messages .error {
+        background-color: #f8d7da;
+        border-color: #f5c6cb;
+        color: #721c24;
+    }
+
+    .messages .success {
+        background-color: #d4edda;
+        border-color: #c3e6cb;
+        color: #155724;
+    }
+
+    .group h2 {
+        margin: 0;
+        padding: 10px;
+        background-color: #007BFF;
+        color: white;
+        border-top-left-radius: 5px;
+        border-top-right-radius: 5px;
+        width: 70%;
+        margin-left:200px ;
+    }
+
+    .table {
+        display: flex;
+        /* Use Flexbox for layout */
+    }
+
+    .members {
+        flex: 1;
+        /* Equal distribution of space for both columns */
+        padding: 10px;
+        border: 1px solid #ccc;
+        background-color: #f7f7f707;
+        margin-left: 10px;
+    }
+
+    .body {
+        background-color: rgba(163, 157, 157, 0.31);
+        /* Use rgba format with transparency */
+    }
 </style>
 {% endblock style %}
 
+
 {% block content %}
+{% for message in messages %}
+<p{% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</p>
+{% endfor %}
 
 {% for group in groups %}
 <div class="card">
-    <a href="{% url 'videoCall:lobby' group=group.name %}"><h2>{{ group.name }}</h2></a>
-    
-    {% for doc in group.doc.all %}
-    <a href="{% url 'liveEdit:doc' group=group.name doc=doc.name %}">{{ doc.name }}</a>
-    {% endfor %}
+    <a href="{% url 'videoCall:lobby' group=group.name %}" class="group">
+        <h2>{{ group.name }}</h2>
+    </a>
+    <div class="add-member-link">
+        <a href="{% url 'videoCall:addMember' group=group.name %}">Add Member</a>
+    </div>
+    <div class="add-doc-link">
+        <a href="{% url 'videoCall:addDoc' group=group.name %}">Create Document</a>
+    </div>
+
+    <br>
+
+    <div class="table">
+        <div class="document">
+            <h3> Documents </h3>
+            <hr>
+            {% for doc in group.doc.all %}
+            <a href="{% url 'liveEdit:doc' group=group.name doc=doc.name %}">{{ doc.name }}</a>
+            <br>
+            {% endfor %}
+        </div>
+
+        <div class="document">
+            <h3> Members </h3>
+            <hr>
+            {% for member in group.user_profile.all %}
+            <p>{{ member.user.username }}</p>
+            {% endfor %}
+        </div>
+    </div>
 </div>
 {% endfor %}
-
 {% endblock content %}
