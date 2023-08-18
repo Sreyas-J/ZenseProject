@@ -2,6 +2,8 @@ from django.contrib import admin
 from django.urls import path
 from . import views
 
+app_name = 'videoCall'
+
 urlpatterns=[
     path('',views.loginPage,name='login'),
     path('home/',views.home,name='home'),

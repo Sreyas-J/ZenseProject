@@ -3,6 +3,6 @@ from django.urls import path,include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('doc/',include('liveEdit.urls')),
-    path('',include('videoCall.urls')),
+    path('doc/',include('liveEdit.urls',namespace='liveEdit')),
+    path('',include('videoCall.urls',namespace='videoCall')),
 ]

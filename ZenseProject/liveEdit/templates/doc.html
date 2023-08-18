@@ -8,7 +8,26 @@
     <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
 </head>
 
+<style>
+    a.goBack {
+        display: inline-block;
+        padding: 10px 20px;
+        background-color: #3498db;
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+        border: none;
+        cursor: pointer;
+    }
+
+    /* Change color on hover */
+    a.goBack:hover {
+        background-color: #2980b9;
+    }
+</style>
+
 <body>
+    <a href="#" class="goBack" onclick="goBack()">Go Back</a>
     <div id="editor"></div>
     <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
     <script>
@@ -21,26 +40,30 @@
         const socket = new WebSocket(url)
 
         socket.onmessage = function (e) {
-            
+
             let data = JSON.parse(e.data);
-            if(data.content){
-                quill.setContents(data.content,'api');
-            }else if(data.delta){
+            if (data.content) {
+                quill.setContents(data.content, 'api');
+            } else if (data.delta) {
                 quill.updateContents(data.delta)
             }
 
-            console.log(data);            
+            console.log(data);
         };
 
         quill.on('text-change', function (delta, oldDelta, source) {
             if (source === 'user') {
-                socket.send(JSON.stringify({ 
+                socket.send(JSON.stringify({
                     delta: delta,
-                    content:quill.getContents()
-                 }));
-                 console.log(delta,' ',quill.getContents())
+                    content: quill.getContents()
+                }));
+                console.log(delta, ' ', quill.getContents())
             }
         });
+
+        function goBack() {
+            window.history.back();
+        }
     </script>
 
 </body>

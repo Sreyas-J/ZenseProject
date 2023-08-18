@@ -1,22 +1,62 @@
-{% extends 'layout.html' %} 
+{% extends 'layout.html' %}
 {% load static %}
-{% block title %} Room {% endblock title %} 
+{% block title %} Room {% endblock title %}
 
-{% block content %} 
+{% block style %}
+<style>
+  .dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+  }
+
+  /* Style the dropdown links */
+  .dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+  }
+
+  /* Change color on hover */
+  .dropdown-content a:hover {
+    background-color: #f1f1f1;
+  }
+
+  /* Show the dropdown content when the dropdown button is hovered over */
+  .dropdown:hover .dropdown-content {
+    display: block;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
 <main>
-    <section id="room-name-wrapper">
-        <p>Room Name:<span id="room-name">{{room}}</span></p>
-    </section>
+  <section id="room-name-wrapper">
+    <p>Room Name:<span id="room-name">{{group.name}}</span></p>
+  </section>
 
-    <section id="video-streams"> </section>
+  <div class="dropdown">
+    <button class="dropbtn">Documents</button>
+    <div class="dropdown-content">
+      {% for doc in group.doc.all %}
+      <a href="{% url 'liveEdit:doc' group=group doc=doc %}">{{doc.name}}</a>
+      {% endfor %}
+    </div>
+  </div>
 
-    <section id="controls-wrapper">
-        <div class="icon-wrapper">
-            <img id="mic-btn" class="control-icon" src="{% static 'images/mic.png' %}"/>
-            <img id="camera-btn" class="control-icon" src="{% static 'images/video.png' %}"/>
-            <img id="leave-btn" class="control-icon" src="{% static 'images/leave.jpg' %}"/>
-        </div>
-    </section>
+  <section id="video-streams"> </section>
+
+  <section id="controls-wrapper">
+    <div class="icon-wrapper">
+      <img id="mic-btn" class="control-icon" src="{% static 'images/mic.png' %}" />
+      <img id="camera-btn" class="control-icon" src="{% static 'images/video.png' %}" />
+      <img id="leave-btn" class="control-icon" src="{% static 'images/leave.jpg' %}" />
+    </div>
+  </section>
 
 </main>
 <script type="text/javascript" src="{% static 'js/AgoraRTC_N-4.18.2.js' %}"></script>

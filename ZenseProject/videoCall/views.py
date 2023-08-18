@@ -29,11 +29,13 @@ def Token(request,group):
 @login_required(login_url='signup') 
 def home(request):
     profile=Profile.objects.get(user=request.user)
+    grps=profile.groups.all()
     return render(request,'home.html',{'groups':profile.groups.all()})
 
-@login_required(login_url='signup') 
+@login_required(login_url='videoCall:signup') 
 def room(request,group):
-    return render(request,'room.html',{'room':group})
+    grp=Group.objects.get(name=group)
+    return render(request,'room.html',{'group':grp})
 
 def signup(request):
     if request.method=='POST':
@@ -41,13 +43,18 @@ def signup(request):
         try:
             instance=User.objects.get(username=username)
             messages.error(request,'This user already exists. ')
-            return redirect('signup')
+            return redirect('videoCall:signup')
         except:
             password=request.POST.get('password')
-            user = User.objects.create_user(username=username, password=password)
-            Profile.objects.create(user=user)
-            login(request,user)
-            return redirect('home')
+            confirm_password=request.POST.get('confirm_password')
+            if password==confirm_password:
+                user = User.objects.create_user(username=username, password=password)
+                Profile.objects.create(user=user)
+                login(request,user)
+            else:
+                messages.error(request,"Password and Confirm password don't match.")
+                return redirect('videoCall:signup')
+            return redirect('videoCall:home')
 
     return render(request,'signup.html')
 
@@ -60,13 +67,14 @@ def loginPage(request):
         
         if user is not None:
             login(request, user)
-            return redirect('home')  # Redirect to the profile or desired page after successful login
+            return redirect('videoCall:home')  # Redirect to the profile or desired page after successful login
         else:
             # User authentication failed
             return render(request, 'login.html', {'error_message': 'Invalid credentials.'})
     
     return render(request, 'login.html')
 
+@login_required
 def lobby(request,group):
     return render(request,'lobby.html',{'room':group,'user':request.user})
 
