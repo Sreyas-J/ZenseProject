@@ -1,4 +1,6 @@
 import json
+import re
+
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
 from channels.layers import get_channel_layer
@@ -63,12 +65,17 @@ class EditConsumer(AsyncWebsocketConsumer):
 
     @database_sync_to_async
     def update_doc(self, content):
+        def escape_quotes(match):
+            return match.group().replace('"', r'\"')
+        
         content_json = json.dumps(content)
         updated_content_json = content_json.replace("'", "\"")
-        self.document.content = updated_content_json
+
+        escaped_content_json = re.sub(r'console\.log\("([^"]*)"\)', escape_quotes, updated_content_json)
+
+        self.document.content = escaped_content_json
         print(self.document.content)
         self.document.save()
-
 
     async def document_content(self, event):
         delta = event['delta']

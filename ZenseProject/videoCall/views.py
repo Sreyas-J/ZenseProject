@@ -26,13 +26,12 @@ def Token(request,group):
     token = RtcTokenBuilder.buildTokenWithUid(Id, certificate, channel, uid, role, privilegeExpiredTs)
     return JsonResponse({'token':token,'uid':uid},safe=False)
 
-@login_required(login_url='signup') 
+@login_required(login_url='videoCall:login') 
 def home(request):
     profile=Profile.objects.get(user=request.user)
-    grps=profile.groups.all()
     return render(request,'home.html',{'groups':profile.groups.all()})
 
-@login_required(login_url='videoCall:signup') 
+@login_required(login_url='videoCall:login') 
 def room(request,group):
     grp=Group.objects.get(name=group)
     return render(request,'room.html',{'group':grp})
