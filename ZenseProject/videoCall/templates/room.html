@@ -4,9 +4,12 @@
 
 {% block style %}
 <style>
+  .flex-container {
+    display: flex;
+    justify-content: center;
+  }
+
   .dropdown-content {
-    display: none;
-    position: absolute;
     background-color: #f9f9f9;
     min-width: 160px;
     box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
@@ -30,6 +33,11 @@
   .dropdown:hover .dropdown-content {
     display: block;
   }
+
+  .record-button button {
+    background-color: rgb(38, 99, 197);
+    color: #f9f9f9;
+  }
 </style>
 {% endblock %}
 
@@ -39,13 +47,21 @@
     <p>Room Name:<span id="room-name">{{group.name}}</span></p>
   </section>
 
-  <div class="dropdown">
-    <button class="dropbtn">Documents</button>
-    <div class="dropdown-content">
-      {% for doc in group.doc.all %}
-      <a href="{% url 'liveEdit:doc' group=group doc=doc %}">{{doc.name}}</a>
-      {% endfor %}
+  <div class="flex-container">
+
+    <div class="dropdown">
+      <button class="dropbtn">Documents</button>
+      <div class="dropdown-content">
+        {% for doc in group.doc.all %}
+        <a href="{% url 'liveEdit:doc' group=group doc=doc %}">{{doc.name}}</a>
+        {% endfor %}
+      </div>
     </div>
+
+    <div class="record-button">
+      <button id="start-stop-record-btn">Start Recording</button>
+    </div>
+
   </div>
 
   <section id="video-streams"> </section>
