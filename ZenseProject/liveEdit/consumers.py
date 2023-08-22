@@ -1,5 +1,6 @@
 import json
 import re
+import subprocess
 
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
@@ -9,7 +10,6 @@ from channels.db import database_sync_to_async
 
 from .models import Document
 from videoCall.models import Group
-
 
 class EditConsumer(AsyncWebsocketConsumer):
     async def connect(self):
@@ -50,18 +50,54 @@ class EditConsumer(AsyncWebsocketConsumer):
     
     async def receive(self, text_data):
         data = json.loads(text_data)
-        delta=data['delta']
-        # Check if the sender's channel name is the same as the current channel name            
-        await self.channel_layer.group_send(
-            self.room_group_name,
-            {
-                'type': 'document_content',
-                'delta': delta,
-                'exclude_channel':self.channel_name
-            }
-        )
+        print("data ",data)
+        try:
+            delta=data['delta']
+            # Check if the sender's channel name is the same as the current channel name            
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    'type': 'document_content',
+                    'delta': delta,
+                    'exclude_channel':self.channel_name
+                }
+            )
 
-        await self.update_doc(data['content'])
+            await self.update_doc(data['content'])
+        except KeyError:
+            
+            code=await self.get_code(data['code'])
+            
+            if code:
+                output = await self.execute_code(code)
+                await self.send(text_data=json.dumps({'output': output}))
+
+    async def get_code(self, content):
+        code = ""
+        for i in range(len(content)):
+            if i < len(content) - 1 and content[i + 1].get('attributes', {}).get('code-block'):
+                code += content[i]["insert"]
+        print("code: ", code)
+        return code
+
+
+    @database_sync_to_async
+    def execute_code(self, code):
+        try:
+            result = subprocess.run(
+                ['python', '-c', code],
+                capture_output=True,
+                text=True,
+                timeout=10
+            )
+
+            output = result.stdout + result.stderr
+        except subprocess.TimeoutExpired:
+            output = "Execution timed out."
+        except Exception as e:
+            output = str(e)
+
+        return output
 
     @database_sync_to_async
     def update_doc(self, content):
