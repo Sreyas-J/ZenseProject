@@ -9,6 +9,10 @@
 </head>
 
 <style>
+    #outputArea{
+        background-color: rgb(1, 1, 55);
+        color: #fefafa;
+    }
     a.goBack {
         display: inline-block;
         padding: 10px 20px;
@@ -73,6 +77,10 @@
             } else if (data.delta) {
                 quill.updateContents(data.delta)
             }
+            if (data.output) {
+                const outputArea = document.getElementById('outputArea');
+                outputArea.innerHTML = data.output.replace(/\n/g, '<br>');
+            }
 
             console.log(data);
         };
@@ -97,7 +105,7 @@
             socket.send(JSON.stringify({
                 code: codeOps
             }));
-            console.log("content ",codeOps);
+            console.log("content ", codeOps);
         });
     </script>
 

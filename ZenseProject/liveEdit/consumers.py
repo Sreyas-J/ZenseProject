@@ -76,26 +76,33 @@ class EditConsumer(AsyncWebsocketConsumer):
         code = ""
         for i in range(len(content)):
             if i < len(content) - 1 and content[i + 1].get('attributes', {}).get('code-block'):
-                code += content[i]["insert"]
+                code += f'{content[i]["insert"]}\n'
         print("code: ", code)
         return code
 
 
-    @database_sync_to_async
-    def execute_code(self, code):
+    async def execute_code(self, code):
         try:
-            result = subprocess.run(
-                ['python', '-c', code],
-                capture_output=True,
+            process = subprocess.Popen(
+                ['python3', '-c', code],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
                 text=True,
-                timeout=10
+                shell=False
             )
+            stdout, stderr = process.communicate(timeout=10)
 
-            output = result.stdout + result.stderr
+            if stdout:
+                output = stdout
+            else:
+                output = stderr
+
         except subprocess.TimeoutExpired:
             output = "Execution timed out."
         except Exception as e:
             output = str(e)
+
+        print("OUTPUT: ",output)
 
         return output
 
