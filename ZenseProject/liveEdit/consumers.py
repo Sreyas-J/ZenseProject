@@ -71,13 +71,19 @@ class EditConsumer(AsyncWebsocketConsumer):
             code=await self.get_code(data['code'])
             
             if code:
-                await self.channel_layer.group_send(
-                    self.room_group_name,
-                    {
-                        'type': 'run_code',
-                        'output': await self.execute_code(code),
-                    }
-                )
+                output= await self.execute_code(code)
+                if data['role']=="admin":
+                    await self.channel_layer.group_send(
+                        self.room_group_name,
+                        {
+                            'type': 'run_code',
+                            'output': output,
+                        }
+                    )
+                else:
+                    await self.send(text_data=json.dumps({
+                        'output':output
+                    }))
 
     async def get_code(self, content):
         code = ""

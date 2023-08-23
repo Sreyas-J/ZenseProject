@@ -38,22 +38,24 @@
 <body>
     <div class="hidden">
         <h1>
-            <div id="room">{{Room.name}}</div>
-            <div id="doc">{{Doc}}</div>
-            <div id="setting">{{Room.setting}}</div>
-            {% if Room.setting=="ADMIN"}
+            <div id="room">{{ Room.name }}</div>
+            <div id="doc">{{ Doc.name }}</div>
+            <div id="setting">{{ Doc.setting }}</div>
+            {% if Doc.setting == "ADMIN" %}
             <div id="is_admin">
-                {% if profile in admin.all %}admin
-                {% else %}member
+                {% if profile in admin.all %}<p>admin</p>
+                {% else %}<p>member</p>
                 {% endif %}
             </div>
             {% endif %}
+
         </h1>
+
     </div>
 
     <a href="#" class="goBack" onclick="goBack()">Go Back</a>
     <div id="outputArea"></div>
-    {% if Room.setting=="ADMIN" %}
+    {% if Doc.setting == "ADMIN" %}
     <button id="runCode">Run Code</button>
     {% endif %}
     <div id="editor"></div>
@@ -62,17 +64,20 @@
         const room = document.getElementById("room").textContent
         const doc = document.getElementById("doc").textContent
         const setting = document.getElementById("setting").textContent
+        var role="member"
+        console.log("admin: ", document.getElementById("is_admin").innerText)
 
-        if (setting === "ADMIN" && document.getElementById("is_admin").textContent==="member") {
+        if (setting === "ADMIN" && document.getElementById("is_admin").innerText.includes("member")) {
             var quill = new Quill('#editor', {
                 theme: 'snow',
-                readOnly:true,
+                readOnly: true,
                 modules: {
                     toolbar: false
                 }
             });
         }
         else {
+            role="admin"
             let toolbarOptions = [
                 ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
                 ['blockquote', 'code-block'],
@@ -137,7 +142,8 @@
         runCodeButton.addEventListener('click', function () {
             const codeOps = quill.getContents().ops;
             socket.send(JSON.stringify({
-                code: codeOps
+                code: codeOps,
+                role: role
             }));
             console.log("content ", codeOps);
         });

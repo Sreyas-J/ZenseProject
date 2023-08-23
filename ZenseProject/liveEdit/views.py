@@ -13,13 +13,13 @@ def doc(request,group,doc):
         messages.error(request,"You don't have access to this group")
         return redirect("videoCall:home")
     
-    context={"Room":grp,"Doc":doc}
-    
     document=Document.objects.get(name=doc)
+    context={"Room":grp,"Doc":document}
+
     if document in grp.doc.all():
 
         if document.setting=="ADMIN":
-            context["admin"]=Profile.objects.filter(admin_right=grp)
+            context["admin"]=Profile.objects.filter(admin=grp)
             context["profile"]=profile
 
     else:

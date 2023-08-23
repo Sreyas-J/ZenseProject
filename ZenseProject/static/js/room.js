@@ -187,7 +187,7 @@ const startCloudRecording = async (resourceId,rec_uid) => {
 
     const requestBody = {
         uid: rec_uid.toString(),
-        cname: `${CHANNEL}_${NAME}`,
+        cname: `${CHANNEL}_${NAME}`, 
         clientRequest: {
             token: TOKEN,
             recordingConfig: {

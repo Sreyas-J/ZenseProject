@@ -9,7 +9,7 @@ import json
 from django.views.decorators.csrf import csrf_exempt
 
 from agora_token_builder import RtcTokenBuilder
-import random
+import random 
 import time
 
 def Token(request,group):
