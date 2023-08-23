@@ -70,7 +70,8 @@ def addDoc(request,group):
         try:
             Document.objects.get(name=doc_name,groups=grp)
         except:
-            document=Document.objects.create(name=doc_name)
+            document=Document.objects.create(name=doc_name,setting=request.POST.get("setting"))
+
             grp.doc.add(document)
             grp.save()
             messages.success(request,f"{doc_name} has been created in {group}")

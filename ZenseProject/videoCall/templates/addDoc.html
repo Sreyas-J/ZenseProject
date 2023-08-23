@@ -68,6 +68,13 @@
     {% csrf_token %}
     <label for="add_document">Document name</label>
     <input required type="text" name="document" />
+
+    <label for="document_setting">Access</label>
+    <select name="setting">
+        <option value="ADMIN">Admins only</option>
+        <option value="EVERYONE" selected>All members</option>
+      </select>
+
     <button type="submit">Add Document</button>
 </form>
 
