@@ -9,10 +9,15 @@
 </head>
 
 <style>
-    #outputArea{
+    .hidden {
+        display: none;
+    }
+
+    #outputArea {
         background-color: rgb(1, 1, 55);
         color: #fefafa;
     }
+
     a.goBack {
         display: inline-block;
         padding: 10px 20px;
@@ -31,6 +36,10 @@
 </style>
 
 <body>
+    <h1>
+        <div class="hidden" id="room">{{Room}}</div>
+        <div class="hidden" id="doc">{{Doc}}</div>
+    </h1>
     <a href="#" class="goBack" onclick="goBack()">Go Back</a>
     <div id="outputArea"></div>
     <button id="runCode">Run Code</button>
@@ -65,8 +74,9 @@
             }
         });
 
-
-        let url = `ws://${window.location.host}/ws/doc/Trial/Doc/`
+        const room = document.getElementById("room").textContent
+        const doc = document.getElementById("doc").textContent
+        let url = `ws://${window.location.host}/ws/doc/${room}/${doc}/`
         const socket = new WebSocket(url)
 
         socket.onmessage = function (e) {

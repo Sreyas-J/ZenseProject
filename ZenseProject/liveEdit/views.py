@@ -9,4 +9,4 @@ def doc(request,group,doc):
     if Group.objects.get(name=group) not in profile.groups.all():
         return HttpResponse("You don't have access to this group", status=403)
 
-    return render(request,'doc.html')
+    return render(request,'doc.html',{"Room":group,"Doc":doc})

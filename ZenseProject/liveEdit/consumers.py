@@ -25,6 +25,9 @@ class EditConsumer(AsyncWebsocketConsumer):
 
         self.document= await self.doc_query()
 
+        if self.document==None:
+            return
+
 
         await self.accept()
 
@@ -39,12 +42,11 @@ class EditConsumer(AsyncWebsocketConsumer):
 
     @database_sync_to_async
     def doc_query(self):
-        grp = Group.objects.get(name=self.group_name)
-        document, created = Document.objects.get_or_create(name=self.document_name)
-
-        # Check if the document is not already associated with the group
-        if document not in grp.doc.all():
-            grp.doc.add(document)  # Associate the document with the group
+        try:
+            grp = Group.objects.get(name=self.group_name)
+            document= grp.doc.get(name=self.document_name)
+        except:
+            return None
 
         return document
     
@@ -69,8 +71,13 @@ class EditConsumer(AsyncWebsocketConsumer):
             code=await self.get_code(data['code'])
             
             if code:
-                output = await self.execute_code(code)
-                await self.send(text_data=json.dumps({'output': output}))
+                await self.channel_layer.group_send(
+                    self.room_group_name,
+                    {
+                        'type': 'run_code',
+                        'output': await self.execute_code(code),
+                    }
+                )
 
     async def get_code(self, content):
         code = ""
@@ -129,3 +136,8 @@ class EditConsumer(AsyncWebsocketConsumer):
             await self.send(text_data=json.dumps({
                 'delta': delta
             }))
+
+    async def run_code(self,event):
+        await self.send(text_data=json.dumps({
+            'output':event['output']
+        }))
