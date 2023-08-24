@@ -181,7 +181,7 @@ const acquireCloudRecording = async (rec_uid) => {
 };
 
 // Function to start cloud recording
-const startCloudRecording = async (resourceId, rec_uid) => {
+const startCloudRecording = async (resourceId, rec_uid,rec_token) => {
     console.log("resource id: ", resourceId, " , app id: ", APP_ID)
     const startEndpoint = `https://api.agora.io/v1/apps/${APP_ID}/cloud_recording/resourceid/${resourceId}/mode/mix/start`;
 
@@ -189,7 +189,7 @@ const startCloudRecording = async (resourceId, rec_uid) => {
         uid: rec_uid,
         cname: CHANNEL,
         clientRequest: {
-            token: TOKEN,
+            token: rec_token,
             recordingConfig: {
                 maxIdleTime: 30,
                 streamTypes: 2,
@@ -204,6 +204,7 @@ const startCloudRecording = async (resourceId, rec_uid) => {
                     "mixedVideoLayout": 1,
                     "backgroundColor": "#FF0000"
                 },
+                avFileType: ["hls", "mp4"],
             },
             storageConfig: {
                 accessKey: "AKIAY74HYE7CAGCY6KUC",
@@ -211,6 +212,7 @@ const startCloudRecording = async (resourceId, rec_uid) => {
                 bucket: "zense-project-videocall-recording",
                 secretKey: "XvoA9I+CyHsWb+qnDll4mQNGvlwCLDorVVnZ7jkY",
                 vendor: 1,
+                // fileNamePrefix: ["Trial","2023-08-22 15:45:32.123456_Sreyas"]
             }
         }
     };
@@ -273,7 +275,7 @@ document.getElementById('start-stop-record-btn').addEventListener('click', async
         
         if (resourceId) {
             console.log('Resource ID acquired:', resourceId);
-            sid = await startCloudRecording(resourceId, rec_uid); // Start recording after acquiring resource ID
+            sid = await startCloudRecording(resourceId, rec_uid,rec_token); // Start recording after acquiring resource ID
         } else {
             console.error('Failed to acquire resource ID');
         }

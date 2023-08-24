@@ -55,7 +55,7 @@
 
     <a href="#" class="goBack" onclick="goBack()">Go Back</a>
     <div id="outputArea"></div>
-    {% if Doc.setting == "ADMIN" %}
+    {% if Doc.setting == "ADMIN" and profile %}
     <button id="runCode">Run Code</button>
     {% endif %}
     <div id="editor"></div>
@@ -65,9 +65,9 @@
         const doc = document.getElementById("doc").textContent
         const setting = document.getElementById("setting").textContent
         var role="member"
-        console.log("admin: ", document.getElementById("is_admin").innerText)
 
         if (setting === "ADMIN" && document.getElementById("is_admin").innerText.includes("member")) {
+            console.log("admin: ", document.getElementById("is_admin").innerText)
             var quill = new Quill('#editor', {
                 theme: 'snow',
                 readOnly: true,
@@ -99,7 +99,7 @@
             ];
             var quill = new Quill('#editor', {
                 theme: 'snow',
-                modules: {
+                modules: { 
                     toolbar: toolbarOptions
                 }
             });

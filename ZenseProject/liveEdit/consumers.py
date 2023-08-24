@@ -28,7 +28,6 @@ class EditConsumer(AsyncWebsocketConsumer):
         if self.document==None:
             return
 
-
         await self.accept()
 
         if self.document.content:
@@ -38,7 +37,6 @@ class EditConsumer(AsyncWebsocketConsumer):
             await self.send(text_data=json.dumps({
                 'content': first_insert
             }))
-
 
     @database_sync_to_async
     def doc_query(self):
@@ -69,7 +67,7 @@ class EditConsumer(AsyncWebsocketConsumer):
         except KeyError:
             
             code=await self.get_code(data['code'])
-            
+             
             if code:
                 output= await self.execute_code(code)
                 if data['role']=="admin":
