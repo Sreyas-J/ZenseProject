@@ -15,5 +15,6 @@ urlpatterns=[
     path('room/<str:group>/addDoc/',views.addDoc,name='addDoc'),
 
     path('<str:group>/get_token/',views.Token,name='token'),
+    path('create_recording/<str:group>/',views.record,name='recording'),
     path('create_member/',views.createMember,name='createMember'),
 ]

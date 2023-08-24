@@ -4,6 +4,7 @@ const TOKEN = sessionStorage.getItem('token')
 let UID = Number(sessionStorage.getItem('UID'))
 let NAME = sessionStorage.getItem('name')
 var rec_uid = null
+var rec_name=null
 
 const customerKey = "cd59f667dd18444b90508cdf17105741";
 const customerSecret = "188e65fe83944fad925e16fbe7f1b2f3";
@@ -13,7 +14,7 @@ const headers = new Headers();
 headers.append("Authorization", "Basic " + base64Credentials);
 headers.append("Content-Type", "application/json;charset=utf-8");
 
-const client = AgoraRTC.createClient({ mode: 'rtc', codec: 'vp9' })
+const client = AgoraRTC.createClient({ mode: 'rtc', codec: 'vp8' })
 var sid = null
 var resourceId = null
 
@@ -118,7 +119,6 @@ let createMember = async () => {
     return member;
 };
 
-
 function getCookie(name) {
     let cookieValue = null;
     if (document.cookie && document.cookie !== '') {
@@ -182,7 +182,7 @@ const acquireCloudRecording = async (rec_uid) => {
 
 // Function to start cloud recording
 const startCloudRecording = async (resourceId, rec_uid, rec_token) => {
-    console.log("resource id: ", resourceId, " , app id: ", APP_ID)
+    console.log("resource id: ", resourceId, " , app id: ", APP_ID,"rec name: ",rec_name)
     const startEndpoint = `https://api.agora.io/v1/apps/${APP_ID}/cloud_recording/resourceid/${resourceId}/mode/mix/start`;
 
     const requestBody = {
@@ -221,7 +221,7 @@ const startCloudRecording = async (resourceId, rec_uid, rec_token) => {
                 bucket: "zense-project-videocall-recording",
                 secretKey: "XvoA9I+CyHsWb+qnDll4mQNGvlwCLDorVVnZ7jkY",
                 vendor: 1,
-                fileNamePrefix: ["Trial", "Sreyas1"]
+                fileNamePrefix: [CHANNEL.toString(), NAME]
             }
         }
     };
@@ -278,6 +278,11 @@ document.getElementById('start-stop-record-btn').addEventListener('click', async
         let info = await response.json();
         rec_uid = info.uid.toString();
         let rec_token = info.token;
+
+        let respond= await fetch(`http://127.0.0.1:8000/create_recording/${CHANNEL}/?uid=${rec_uid}`)
+        let respondData = await respond.json();
+        rec_name= respondData.name.toString()
+        console.log(rec_name)
 
         const data = await acquireCloudRecording(rec_uid);
         resourceId = data.resourceId;

@@ -17,11 +17,15 @@ load_dotenv()
 
 import random 
 import time
+import datetime
 
 Id=os.getenv("APP_ID", None)
 certificate=os.getenv("APP_CERTIFICATE",None)
 expirationTime=3600*24
 role=1
+
+s3 = boto3.client('s3', aws_access_key_id=os.getenv("Access_key_ID", None), aws_secret_access_key=os.getenv("Secret_access_key", None), region_name='ap-south-1')
+bucket='zense-project-videocall-recording'
 
 def Token(request,group):
     channel=group
@@ -30,6 +34,25 @@ def Token(request,group):
     uid=random.randint(1,2**32-1)
     token = RtcTokenBuilder.buildTokenWithUid(Id, certificate, channel, uid, role, privilegeExpiredTs)
     return JsonResponse({'token':token,'uid':uid},safe=False)
+
+def record(request,group):
+    user=request.user
+    rec=Recording.objects.create(name=user.username)
+    rec.name=f"{rec.name}_{rec.created.strftime('%Y_%m_%d_%H_%M%S')}"
+    rec.save()
+
+    grp=Group.objects.get(name=group)
+    grp.records.add(rec)
+    grp.save()
+
+    profile=Profile.objects.get(user=user)
+    profile.recordings.add(rec)
+    profile.save()
+
+    s3.put_object(Bucket=bucket, Key=f'{group}/{user.username}/')
+    print(f'{group}/{rec.name}/')
+
+    return JsonResponse({'name':rec.name},safe=False)
 
 @login_required(login_url='videoCall:login') 
 def home(request):
@@ -152,8 +175,7 @@ def createGroup(request):
             messages.error(request,"This group already exists")
 
         else:
-            s3 = boto3.client('s3', aws_access_key_id=os.getenv("Access_key_ID", None), aws_secret_access_key=os.getenv("Secret_access_key", None), region_name='ap-south-1')
-            s3.put_object(Bucket='zense-project-videocall-recording', Key=f'{name}/')
+            s3.put_object(Bucket=bucket, Key=f'{name}/')
 
             profile=Profile.objects.get(user=request.user)
             grp=Group.objects.create(name=name,setting=request.POST.get("setting"))
