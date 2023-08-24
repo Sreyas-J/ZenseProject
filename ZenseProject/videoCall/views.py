@@ -9,11 +9,17 @@ import json
 from django.views.decorators.csrf import csrf_exempt
 
 from agora_token_builder import RtcTokenBuilder
+import boto3
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
 import random 
 import time
 
-Id='41a16d737c284fadb182676757e070ab'
-certificate='49a7c4370085482f84c8e839e79ff023'
+Id=os.getenv("APP_ID", None)
+certificate=os.getenv("APP_CERTIFICATE",None)
 expirationTime=3600*24
 role=1
 
@@ -51,7 +57,11 @@ def addMember(request, group):
         profile.save()
 
         messages.success(request,f'{name} has been added to {group}')
-        return redirect('videoCall:home')
+        if request.POST.get("action")=="Done":
+            print("done")
+            return redirect('videoCall:home')
+        else:
+            return redirect('videoCall:addMember',group=group)
 
     return render(request,'addMember.html',{'profiles':Profile.objects.exclude(groups=grp)})
 
@@ -119,7 +129,8 @@ def loginPage(request):
 
 @login_required
 def lobby(request,group):
-    return render(request,'lobby.html',{'room':group,'user':request.user})
+    print("Id: ",Id)
+    return render(request,'lobby.html',{'room':group,'user':request.user,'id':Id,'customerKey':os.getenv("customerKey", None),'customerSecret':os.getenv("customerSecret", None)})
 
 @csrf_exempt
 def createMember(request):
@@ -141,6 +152,9 @@ def createGroup(request):
             messages.error(request,"This group already exists")
 
         else:
+            s3 = boto3.client('s3', aws_access_key_id=os.getenv("Access_key_ID", None), aws_secret_access_key=os.getenv("Secret_access_key", None), region_name='ap-south-1')
+            s3.put_object(Bucket='zense-project-videocall-recording', Key=f'{name}/')
+
             profile=Profile.objects.get(user=request.user)
             grp=Group.objects.create(name=name,setting=request.POST.get("setting"))
 
@@ -150,6 +164,6 @@ def createGroup(request):
 
             messages.success(request,f'{name} has been created')
 
-            return redirect("videoCall:home")
+            return redirect("videoCall:addMember",group=name)
 
     return render(request,"addGroup.html")

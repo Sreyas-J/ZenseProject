@@ -62,13 +62,19 @@
 {% endblock style %}
 
 {% block content %}
+
+{% for message in messages %} 
+{{message}}
+{% endfor %}
+
 <a href="#" class="goBack" onclick="goBack()">Go Back</a>
 
 <form action="" method="post">
     {% csrf_token %}
     <label for="add_member">Member username</label>
     <input required type="text" name="member" list="member-list" />
-    <button type="submit">Add</button>
+    <button type="submit" name="action" value="Done">Add and Save</button>
+    <button type="submit" name="action" value="Continue">Add and continue</button>
 </form>
 
 <datalist id="member-list">
