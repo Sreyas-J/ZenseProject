@@ -3,6 +3,7 @@ const CHANNEL = sessionStorage.getItem('room')
 const TOKEN = sessionStorage.getItem('token')
 let UID = Number(sessionStorage.getItem('UID'))
 let NAME = sessionStorage.getItem('name')
+var rec_uid=null
 
 const customerKey = "cd59f667dd18444b90508cdf17105741";
 const customerSecret = "188e65fe83944fad925e16fbe7f1b2f3";
@@ -13,9 +14,8 @@ headers.append("Authorization", "Basic " + base64Credentials);
 headers.append("Content-Type", "application/json;charset=utf-8");
 
 const client = AgoraRTC.createClient({ mode: 'rtc', codec: 'vp9' })
-var sid=null
-var resourceId=null
-var rec_uid=null
+var sid = null
+var resourceId = null
 
 let localTracks = []
 let remoteUsers = {}
@@ -136,7 +136,7 @@ function getCookie(name) {
 
 let isRecording = false; // Track the recording state
 const uid = generateRandomUid().toString();
-const cname=`${CHANNEL}_${NAME}`;
+const cname = CHANNEL;
 
 function generateRandomUid() {
     return Math.floor(Math.random() * (Math.pow(2, 32) - 1)) + 1;
@@ -151,12 +151,12 @@ const updateButtonLabel = () => {
     }
 };
 
-const acquireCloudRecording = async () => {
+const acquireCloudRecording = async (rec_uid) => {
     const acquireEndpoint = `https://api.agora.io/v1/apps/${APP_ID}/cloud_recording/acquire`;
 
     const requestBody = {
-        cname: cname,
-        uid: uid,
+        cname: CHANNEL,
+        uid: rec_uid,
         clientRequest: {
             region: "AP",
         }
@@ -181,21 +181,21 @@ const acquireCloudRecording = async () => {
 };
 
 // Function to start cloud recording
-const startCloudRecording = async (resourceId,rec_uid) => {
-    console.log("resource id: ",resourceId," , app id: ",APP_ID)
+const startCloudRecording = async (resourceId, rec_uid) => {
+    console.log("resource id: ", resourceId, " , app id: ", APP_ID)
     const startEndpoint = `https://api.agora.io/v1/apps/${APP_ID}/cloud_recording/resourceid/${resourceId}/mode/mix/start`;
 
     const requestBody = {
-        uid: rec_uid.toString(),
-        cname: `${CHANNEL}_${NAME}`, 
+        uid: rec_uid,
+        cname: CHANNEL,
         clientRequest: {
             token: TOKEN,
             recordingConfig: {
-                maxIdleTime:30,
-                streamTypes:2,
-                audioProfile:1,
+                maxIdleTime: 30,
+                streamTypes: 2,
+                audioProfile: 1,
                 channelType: 0,
-                videoStreamType:0,
+                videoStreamType: 0,
                 transcodingConfig: {
                     "height": 640,
                     "width": 360,
@@ -214,7 +214,7 @@ const startCloudRecording = async (resourceId,rec_uid) => {
             }
         }
     };
-    console.log("body: ",JSON.stringify(requestBody))
+    console.log("body: ", JSON.stringify(requestBody))
 
     const response = await fetch(startEndpoint, {
         method: 'POST',
@@ -224,7 +224,7 @@ const startCloudRecording = async (resourceId,rec_uid) => {
 
     if (response.ok) {
         const responseData = await response.json();
-        sid=responseData['sid']
+        sid = responseData['sid']
         console.log('Recording started:', sid);
         return sid
     } else {
@@ -236,7 +236,7 @@ const startCloudRecording = async (resourceId,rec_uid) => {
 };
 
 
-const stopCloudRecording = async (sid,resourceId,rec_uid) => {
+const stopCloudRecording = async (sid, resourceId, rec_uid) => {
     const stopEndpoint = `https://api.agora.io/v1/apps/${APP_ID}/cloud_recording/resourceid/${resourceId}/sid/${sid}/mode/mix/stop`;
 
     const requestBody = {
@@ -263,18 +263,23 @@ const stopCloudRecording = async (sid,resourceId,rec_uid) => {
 // Attach event listener to your "Start Recording" button
 document.getElementById('start-stop-record-btn').addEventListener('click', async () => {
     if (isRecording === false) {
-        const data = await acquireCloudRecording();
-        resourceId= data.resourceId;
-        rec_uid=data.uid
+        let response = await fetch(`http://127.0.0.1:8000/${CHANNEL}/get_token/?channel=${CHANNEL}`);
+        let info = await response.json();
+        rec_uid = info.uid.toString();
+        let rec_token = info.token;
+
+        const data = await acquireCloudRecording(rec_uid);
+        resourceId = data.resourceId;
+        
         if (resourceId) {
             console.log('Resource ID acquired:', resourceId);
-            sid=await startCloudRecording(resourceId,rec_uid); // Start recording after acquiring resource ID
+            sid = await startCloudRecording(resourceId, rec_uid); // Start recording after acquiring resource ID
         } else {
             console.error('Failed to acquire resource ID');
         }
     }
-    else{
-        stopCloudRecording(sid,resourceId,rec_uid);
+    else {
+        stopCloudRecording(sid, resourceId, rec_uid);
     }
     isRecording = !isRecording; // Toggle the recording state
     updateButtonLabel(); // Update the button label based on the state

@@ -12,17 +12,16 @@ from agora_token_builder import RtcTokenBuilder
 import random 
 import time
 
+Id='41a16d737c284fadb182676757e070ab'
+certificate='49a7c4370085482f84c8e839e79ff023'
+expirationTime=3600*24
+role=1
+
 def Token(request,group):
-    Id='41a16d737c284fadb182676757e070ab'
-    certificate='49a7c4370085482f84c8e839e79ff023'
     channel=group
-    uid=random.randint(1,230)
-    expirationTime=3600*24
     timeStamp=time.time()
     privilegeExpiredTs=timeStamp+expirationTime
-    role=1
-    #print(Id,certificate,channel,uid,expirationTime,timeStamp,privilegeExpiredTs,role)
-
+    uid=random.randint(1,2**32-1)
     token = RtcTokenBuilder.buildTokenWithUid(Id, certificate, channel, uid, role, privilegeExpiredTs)
     return JsonResponse({'token':token,'uid':uid},safe=False)
 
@@ -34,6 +33,19 @@ def home(request):
 @login_required(login_url='videoCall:login') 
 def room(request,group):
     grp=Group.objects.get(name=group)
+    #context={}
+
+    # if request.method=="POST":
+    #     if "yes" in request:
+    #         channel=group
+    #         timeStamp=time.time()
+    #         privilegeExpiredTs=timeStamp+expirationTime
+    #         uid=random.randint(1,2**32-1)
+    #         token = RtcTokenBuilder.buildTokenWithUid(Id, certificate, channel, uid, role, privilegeExpiredTs)
+    #         context={"rec_uid":uid,"rec_token":token}
+            
+    #context['group':grp]
+
     return render(request,'room.html',{'group':grp})
 
 @login_required(login_url='videoCall:login')
