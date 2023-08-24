@@ -120,6 +120,8 @@
 <p{% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</p>
 {% endfor %}
 
+<a href="{% url 'videoCall:createGroup' %}">Create Group</a>
+
 {% for group in groups %}
 <div class="card">
     <a href="{% url 'videoCall:lobby' group=group.name %}" class="group">

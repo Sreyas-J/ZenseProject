@@ -212,7 +212,7 @@ const startCloudRecording = async (resourceId, rec_uid,rec_token) => {
                 bucket: "zense-project-videocall-recording",
                 secretKey: "XvoA9I+CyHsWb+qnDll4mQNGvlwCLDorVVnZ7jkY",
                 vendor: 1,
-                // fileNamePrefix: ["Trial","2023-08-22 15:45:32.123456_Sreyas"]
+                fileNamePrefix: [CHANNEL,"Sreyas1"]
             }
         }
     };

@@ -33,19 +33,6 @@ def home(request):
 @login_required(login_url='videoCall:login') 
 def room(request,group):
     grp=Group.objects.get(name=group)
-    #context={}
-
-    # if request.method=="POST":
-    #     if "yes" in request:
-    #         channel=group
-    #         timeStamp=time.time()
-    #         privilegeExpiredTs=timeStamp+expirationTime
-    #         uid=random.randint(1,2**32-1)
-    #         token = RtcTokenBuilder.buildTokenWithUid(Id, certificate, channel, uid, role, privilegeExpiredTs)
-    #         context={"rec_uid":uid,"rec_token":token}
-            
-    #context['group':grp]
-
     return render(request,'room.html',{'group':grp})
 
 @login_required(login_url='videoCall:login')
@@ -145,3 +132,24 @@ def createMember(request):
     )
 
     return JsonResponse({'name':data['name']},safe=False)
+
+def createGroup(request):
+    if request.method=="POST":
+        name=request.POST.get("group")
+
+        if Group.objects.filter(name=name).exists():
+            messages.error(request,"This group already exists")
+
+        else:
+            profile=Profile.objects.get(user=request.user)
+            grp=Group.objects.create(name=name,setting=request.POST.get("setting"))
+
+            profile.groups.add(grp)
+            profile.admin.add(grp)
+            profile.save()
+
+            messages.success(request,f'{name} has been created')
+
+            return redirect("videoCall:home")
+
+    return render(request,"addGroup.html")

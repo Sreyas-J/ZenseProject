@@ -1,0 +1,17 @@
+{% extends 'form_template.html' %} 
+
+{% block title %} Create Group {% endblock title %}
+
+{% block form %} 
+<label for="add_group">Group name</label>
+<input required type="text" name="group" />
+<br><br>
+
+<label for="group_setting">Access</label>
+<select name="setting">
+    <option value="ADMIN">Admins only</option>
+    <option value="EVERYONE" selected>All members</option>
+</select>
+<br><br>
+<button type="submit">Create Group</button>
+{% endblock form %}
