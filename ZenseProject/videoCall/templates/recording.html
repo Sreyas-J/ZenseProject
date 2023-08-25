@@ -1,0 +1,75 @@
+{% extends 'layout.html' %} 
+
+{% block title %} Recording {% endblock title %}
+
+{% block style %} 
+<style>
+    body {
+        font-family: 'Arial', sans-serif;
+        background-color: #f9f9f9;
+        margin: 0;
+        padding: 0;
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    header {
+        background-color: #333;
+        color: #fff;
+        padding: 10px 0;
+        text-align: center;
+    }
+
+    /* Update header text color */
+    header h1 {
+        color: #fff;
+    }
+
+    main {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 5px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    h1, h2, h3 {
+        color: #333;
+    }
+
+    .video-container {
+        position: relative;
+        overflow: hidden;
+        padding-top: 31.25%;
+    }
+
+    .video {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+    }
+</style>
+{% endblock style %}
+
+{% block content %} 
+<div class="container">
+    <header>
+        <h1>Recording Page</h1>
+    </header>
+    <main>
+        <h2>Recording Name</h2>
+        <p>{{ record }}</p>
+        <div class="video-container">
+            <video controls poster="path/to/thumbnail.jpg">
+                <source src="{{url}}" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+        </div>
+    </main>
+</div>
+{% endblock content %}

@@ -204,7 +204,7 @@ def createGroup(request):
     return render(request,"addGroup.html")
 
 
-def get_presigned_url(request,group,recording):
+def get_presigned_url(group,recording):
     rec=Recording.objects.get(name=recording)
     grp=Group.objects.get(name=group)
     profile=Profile.objects.get(recordings=rec)
@@ -212,9 +212,16 @@ def get_presigned_url(request,group,recording):
     if rec in grp.records.all():
         presigned_url = s3.generate_presigned_url(
             'get_object',
-            Params={'Bucket': bucket, 'Key': f'{group}/'},
+            Params={'Bucket': bucket, 'Key': f'{group}/{profile.user.username}/{rec.uid}/{rec.sid}_{group}_0.mp4'},
             ExpiresIn=3600  # URL expiration time in seconds
         )
-        return JsonResponse({"presigned_url": presigned_url},safe=False)
-    else:
-        return JsonResponse({"error": "This recording doesn't exist"}, status=500)
+        return presigned_url
+    return None
+    
+def view_recording(request,group,record):
+    url=get_presigned_url(group,record)
+    print(url)
+    if url:
+        return render(request,"recording.html",{"url":url,"record":record})
+    messages.error(request,"This recording doesn't exist")
+    return redirect('videoCall:home')
