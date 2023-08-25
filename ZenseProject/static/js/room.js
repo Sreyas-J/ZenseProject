@@ -221,7 +221,7 @@ const startCloudRecording = async (resourceId, rec_uid, rec_token) => {
                 bucket: "zense-project-videocall-recording",
                 secretKey: "XvoA9I+CyHsWb+qnDll4mQNGvlwCLDorVVnZ7jkY",
                 vendor: 1,
-                fileNamePrefix: [CHANNEL.toString(), NAME]
+                fileNamePrefix: [CHANNEL.toString(), NAME,rec_uid.toString()]
             }
         }
     };
@@ -237,6 +237,9 @@ const startCloudRecording = async (resourceId, rec_uid, rec_token) => {
         const responseData = await response.json();
         sid = responseData['sid']
         console.log('Recording started:', sid);
+
+        await fetch(`http://127.0.0.1:8000/update_recording/${CHANNEL}/?rec_name=${rec_name}&sid=${sid}`);
+
         return sid
     } else {
         console.error('Error starting cloud recording');
@@ -282,7 +285,6 @@ document.getElementById('start-stop-record-btn').addEventListener('click', async
         let respond= await fetch(`http://127.0.0.1:8000/create_recording/${CHANNEL}/?uid=${rec_uid}`)
         let respondData = await respond.json();
         rec_name= respondData.name.toString()
-        console.log(rec_name)
 
         const data = await acquireCloudRecording(rec_uid);
         resourceId = data.resourceId;

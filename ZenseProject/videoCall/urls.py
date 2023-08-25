@@ -16,5 +16,6 @@ urlpatterns=[
 
     path('<str:group>/get_token/',views.Token,name='token'),
     path('create_recording/<str:group>/',views.record,name='recording'),
+    path('update_recording/<str:group>/',views.update_record,name='update_recording'),
     path('create_member/',views.createMember,name='createMember'),
 ]

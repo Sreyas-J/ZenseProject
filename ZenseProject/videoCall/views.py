@@ -37,7 +37,8 @@ def Token(request,group):
 
 def record(request,group):
     user=request.user
-    rec=Recording.objects.create(name=user.username)
+    uid=request.GET.get("uid")
+    rec=Recording.objects.create(name=user.username,uid=uid)
     rec.name=f"{rec.name}_{rec.created.strftime('%Y_%m_%d_%H_%M%S')}"
     rec.save()
 
@@ -49,10 +50,22 @@ def record(request,group):
     profile.recordings.add(rec)
     profile.save()
 
-    s3.put_object(Bucket=bucket, Key=f'{group}/{user.username}/')
+    s3.put_object(Bucket=bucket, Key=f'{group}/{user.username}/{uid}/')
     print(f'{group}/{rec.name}/')
 
-    return JsonResponse({'name':rec.name},safe=False)
+    return JsonResponse({'name':rec.name,'time':rec.created},safe=False)
+
+def update_record(request,group):
+    try:
+        rec=Recording.objects.get(name=request.GET.get("rec_name"))
+        rec.sid=request.GET.get("sid")
+        rec.save()
+        print("sid: ",rec.sid)
+        return JsonResponse({"message": "Recording updated successfully"})
+    except Recording.DoesNotExist:
+        return JsonResponse({"error": "Recording not found"}, status=404)
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)
 
 @login_required(login_url='videoCall:login') 
 def home(request):
@@ -189,3 +202,19 @@ def createGroup(request):
             return redirect("videoCall:addMember",group=name)
 
     return render(request,"addGroup.html")
+
+
+def get_presigned_url(request,group,recording):
+    rec=Recording.objects.get(name=recording)
+    grp=Group.objects.get(name=group)
+    profile=Profile.objects.get(recordings=rec)
+
+    if rec in grp.records.all():
+        presigned_url = s3.generate_presigned_url(
+            'get_object',
+            Params={'Bucket': bucket, 'Key': f'{group}/'},
+            ExpiresIn=3600  # URL expiration time in seconds
+        )
+        return JsonResponse({"presigned_url": presigned_url},safe=False)
+    else:
+        return JsonResponse({"error": "This recording doesn't exist"}, status=500)

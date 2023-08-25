@@ -5,7 +5,11 @@ from liveEdit.models import Document,options
 class Recording(models.Model):
     name=models.CharField(max_length=100)
     created = models.DateTimeField(auto_now_add=True)
-    url=models.TextField(null=True)
+    uid=models.CharField(max_length=25)
+    sid=models.CharField(max_length=25,null=True)
+
+    class Meta:
+        ordering = ['-created']
 
     def __str__(self):
         return self.name
