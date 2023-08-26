@@ -57,8 +57,9 @@ def record(request,group):
 
 def update_record(request,group):
     try:
+        SID=request.GET.get("sid")
         rec=Recording.objects.get(name=request.GET.get("rec_name"))
-        rec.sid=request.GET.get("sid")
+        rec.sid=SID
         rec.save()
         print("sid: ",rec.sid)
         return JsonResponse({"message": "Recording updated successfully"})
@@ -222,6 +223,6 @@ def view_recording(request,group,record):
     url=get_presigned_url(group,record)
     print(url)
     if url:
-        return render(request,"recording.html",{"url":url,"record":record})
+        return render(request,"recording.html",{"url":url,"record":record,"group":Group.objects.get(name=group)})
     messages.error(request,"This recording doesn't exist")
     return redirect('videoCall:home')

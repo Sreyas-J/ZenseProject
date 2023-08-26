@@ -137,11 +137,20 @@
     <br>
 
     <div class="table">
+
         <div class="document">
             <h3> Documents </h3>
             <hr>
             {% for doc in group.doc.all %}
             <a href="{% url 'liveEdit:doc' group=group.name doc=doc.name %}">{{ doc.name }}</a>
+            <br>
+            {% endfor %}
+        </div>
+
+        <div class="document">
+            <h3> Recording </h3>
+            {% for rec in group.records.all %} 
+            <a href="{% url 'videoCall:view_recording' group=group.name record=rec.name %}">{{rec.name}}</a>
             <br>
             {% endfor %}
         </div>

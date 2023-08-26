@@ -20,6 +20,7 @@ class Group(models.Model):
     doc=models.ManyToManyField(Document,related_name='groups')
     setting=models.CharField(max_length=15,choices=options)
     records=models.ManyToManyField(Recording,related_name='room')
+    icon=models.ImageField(upload_to='icon/')
 
     class Meta:
         ordering = ['-created']
