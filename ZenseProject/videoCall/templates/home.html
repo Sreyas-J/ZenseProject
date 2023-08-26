@@ -1,4 +1,5 @@
 {% extends 'layout.html' %}
+{% load static %}
 
 {% block title %} Home {% endblock title %}
 
@@ -90,7 +91,7 @@
         border-top-left-radius: 5px;
         border-top-right-radius: 5px;
         width: 70%;
-        margin-left:200px ;
+        margin-left: 200px;
     }
 
     .table {
@@ -111,6 +112,9 @@
         background-color: rgba(163, 157, 157, 0.31);
         /* Use rgba format with transparency */
     }
+    .images{
+        padding-left: 50px;
+    }
 </style>
 {% endblock style %}
 
@@ -118,51 +122,55 @@
 {% block content %}
 {% for message in messages %}
 <p{% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</p>
-{% endfor %}
+    {% endfor %}
 
-<a href="{% url 'videoCall:createGroup' %}">Create Group</a>
+    <a href="{% url 'videoCall:createGroup' %}">Create Group</a>
 
-{% for group in groups %}
-<div class="card">
-    <a href="{% url 'videoCall:lobby' group=group.name %}" class="group">
-        <h2>{{ group.name }}</h2>
-    </a>
-    <div class="add-member-link">
-        <a href="{% url 'videoCall:addMember' group=group.name %}">Add Member</a>
-    </div>
-    <div class="add-doc-link">
-        <a href="{% url 'videoCall:addDoc' group=group.name %}">Create Document</a>
-    </div>
-
-    <br>
-
-    <div class="table">
-
-        <div class="document">
-            <h3> Documents </h3>
-            <hr>
-            {% for doc in group.doc.all %}
-            <a href="{% url 'liveEdit:doc' group=group.name doc=doc.name %}">{{ doc.name }}</a>
-            <br>
-            {% endfor %}
+    {% for group in groups %}
+    <div class="card">
+        <a href="{% url 'videoCall:lobby' group=group.name %}" class="group">
+            <h2>{{ group.name }}</h2>
+        </a>
+        <div class="add-member-link">
+            <a href="{% url 'videoCall:addMember' group=group.name %}">Add Member</a>
+        </div>
+        <div class="add-doc-link">
+            <a href="{% url 'videoCall:addDoc' group=group.name %}">Create Document</a>
         </div>
 
-        <div class="document">
-            <h3> Recording </h3>
-            {% for rec in group.records.all %} 
-            <a href="{% url 'videoCall:view_recording' group=group.name record=rec.name %}">{{rec.name}}</a>
-            <br>
-            {% endfor %}
-        </div>
+        <br>
 
-        <div class="document">
-            <h3> Members </h3>
-            <hr>
-            {% for member in group.user_profile.all %}
-            <p>{{ member.user.username }}</p>
-            {% endfor %}
+        <div class="table">
+
+            <div class="document">
+                <h3> Documents </h3>
+                <hr>
+                {% for doc in group.doc.all %}
+                <a href="{% url 'liveEdit:doc' group=group.name doc=doc.name %}">{{ doc.name }}</a>
+                <br>
+                {% endfor %}
+            </div>
+
+            <div class="document">
+                <h3> Recording </h3>
+                {% for rec in group.records.all %}
+                <a href="{% url 'videoCall:view_recording' group=group.name record=rec.name %}">{{rec.name}}</a>
+                <br>
+                {% endfor %}
+            </div>
+
+            <div class="document">
+                <h3> Members </h3>
+                <hr>
+                {% for member in group.user_profile.all %}
+                <p>{{ member.user.username }}
+                    {% if group in profile.admin.all %}
+                    <a class="images" href="{% url 'videoCall:remove_member' group=group.name member=member.user.username %}"><img src="{% static 'images/remove.png' %}" height="20px" width="20px"></a>
+                    {% endif %}
+                </p>
+                {% endfor %}
+            </div>
         </div>
     </div>
-</div>
-{% endfor %}
-{% endblock content %}
+    {% endfor %}
+    {% endblock content %}

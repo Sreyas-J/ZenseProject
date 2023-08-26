@@ -71,7 +71,7 @@ def update_record(request,group):
 @login_required(login_url='videoCall:login') 
 def home(request):
     profile=Profile.objects.get(user=request.user)
-    return render(request,'home.html',{'groups':profile.groups.all()})
+    return render(request,'home.html',{'groups':profile.groups.all(),"profile":profile})
 
 @login_required(login_url='videoCall:login') 
 def room(request,group):
@@ -225,4 +225,11 @@ def view_recording(request,group,record):
     if url:
         return render(request,"recording.html",{"url":url,"record":record,"group":Group.objects.get(name=group)})
     messages.error(request,"This recording doesn't exist")
+    return redirect('videoCall:home')
+
+def remove_member(request,group,member):
+    grp=Group.objects.get(name=group)
+    profile=Profile.objects.get(user=User.objects.get(username=member))
+    profile.groups.remove(grp)
+    profile.save()
     return redirect('videoCall:home')
