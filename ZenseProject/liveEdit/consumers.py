@@ -33,7 +33,6 @@ class EditConsumer(AsyncWebsocketConsumer):
         if self.document.content:
             content_data = json.loads(self.document.content)
             first_insert = content_data['ops']
-            print(first_insert)
             await self.send(text_data=json.dumps({
                 'content': first_insert
             }))
@@ -50,9 +49,9 @@ class EditConsumer(AsyncWebsocketConsumer):
     
     async def receive(self, text_data):
         data = json.loads(text_data)
-        print("data ",data)
         try:
             delta=data['delta']
+            print("delta: ",delta)
             # Check if the sender's channel name is the same as the current channel name            
             await self.channel_layer.group_send(
                 self.room_group_name,
@@ -62,7 +61,7 @@ class EditConsumer(AsyncWebsocketConsumer):
                     'exclude_channel':self.channel_name
                 }
             )
-
+            print("content: ",data['content'])
             await self.update_doc(data['content'])
         except KeyError:
             
@@ -88,7 +87,6 @@ class EditConsumer(AsyncWebsocketConsumer):
         for i in range(len(content)):
             if i < len(content) - 1 and content[i + 1].get('attributes', {}).get('code-block'):
                 code += f'{content[i]["insert"]}\n'
-        print("code: ", code)
         return code
 
 
@@ -113,22 +111,24 @@ class EditConsumer(AsyncWebsocketConsumer):
         except Exception as e:
             output = str(e)
 
-        print("OUTPUT: ",output)
-
         return output
 
     @database_sync_to_async
     def update_doc(self, content):
-        def escape_quotes(match):
-            return match.group().replace('"', r'\"')
-        
-        content_json = json.dumps(content)
-        updated_content_json = content_json.replace("'", "\"")
+        def replace_quotes(value):
+            if isinstance(value, str):
+                if value.startswith("'") and value.endswith("'"):
+                    return '"' + value[1:-1] + '"'
+            elif isinstance(value, dict):
+                for key, val in value.items():
+                    value[key] = replace_quotes(val)
+            elif isinstance(value, list):
+                for i, val in enumerate(value):
+                    value[i] = replace_quotes(val)
+            return value
 
-        escaped_content_json = re.sub(r'console\.log\("([^"]*)"\)', escape_quotes, updated_content_json)
-
-        self.document.content = escaped_content_json
-        print(self.document.content)
+        updated_content = replace_quotes(content)
+        self.document.content = json.dumps(updated_content)
         self.document.save()
 
     async def document_content(self, event):
