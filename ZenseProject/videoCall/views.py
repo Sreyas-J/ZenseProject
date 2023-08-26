@@ -7,6 +7,8 @@ from django.contrib.auth.decorators import login_required
 from .models import *
 import json
 from django.views.decorators.csrf import csrf_exempt
+from django.core.files.storage import default_storage
+from django.conf import settings
 
 from agora_token_builder import RtcTokenBuilder
 import boto3
@@ -190,9 +192,12 @@ def createGroup(request):
 
         else:
             s3.put_object(Bucket=bucket, Key=f'{name}/')
+            icon_file = request.FILES.get('icon')
+            icon_path = f'icon/{name}_{icon_file.name}'
+            icon_path = default_storage.save(icon_path, icon_file)
 
             profile=Profile.objects.get(user=request.user)
-            grp=Group.objects.create(name=name,setting=request.POST.get("setting"))
+            grp=Group.objects.create(name=name,setting=request.POST.get("setting"),icon=icon_path)
 
             profile.groups.add(grp)
             profile.admin.add(grp)
