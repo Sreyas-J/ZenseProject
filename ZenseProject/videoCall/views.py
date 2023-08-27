@@ -73,7 +73,7 @@ def update_record(request,group):
 @login_required(login_url='videoCall:login') 
 def home(request):
     profile=Profile.objects.get(user=request.user)
-    return render(request,'home.html',{'groups':profile.groups.all(),"profile":profile})
+    return render(request,'home.html',{'groups':profile.groups.all(),"profile":profile,'notification':Notification.objects.filter(profiles=profile).exclude(seen=profile).exists()})
 
 @login_required(login_url='videoCall:login') 
 def room(request,group):
@@ -249,3 +249,25 @@ def edit_recording(request,group,recording):
         return redirect('videoCall:home')
 
     return render(request,'editRecording.html',context={"name":recording})
+
+def view_notifications(request):
+    profile = Profile.objects.get(user=request.user)
+    notifications = Notification.objects.filter(profiles=profile)
+    
+    unseen_notifications = []
+    seen_notifications = []
+    
+    for notification in notifications:
+        if profile in notification.seen.all():
+            seen_notifications.append(notification)
+        else:
+            unseen_notifications.append(notification)
+            notification.seen.add(profile)
+    
+    context = {
+        'unseen_notifications': unseen_notifications,
+        'seen_notifications': seen_notifications,
+        'profile': profile,
+    }
+
+    return render(request, 'notifications.html', context)

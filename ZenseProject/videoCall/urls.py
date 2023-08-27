@@ -8,6 +8,7 @@ urlpatterns=[
     path('',views.loginPage,name='login'),
     path('home/',views.home,name='home'),
     path('signup/',views.signup,name='signup'),
+    path('notification/',views.view_notifications,name='notification'),
     path('createGroup/',views.createGroup,name='createGroup'),
     path('<str:group>/',views.lobby,name='lobby'),
     path('room/<str:group>/',views.room,name='room'),

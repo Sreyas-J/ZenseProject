@@ -126,6 +126,11 @@
     {% endfor %}
 
     <a href="{% url 'videoCall:createGroup' %}">Create Group</a>
+    {% if notification == False %}
+    <a href="{% url 'videoCall:notification' %}"><img src="{% static 'images/no_notification.png' %}" height="40px" width="40px"></a>
+    {% else %} 
+    <a href="{% url 'videoCall:notification' %}"><img src="{% static 'images/notification.png' %}" height="40px" width="40px"></a>
+    {% endif %}
 
     {% for group in groups %}
     <div class="card">

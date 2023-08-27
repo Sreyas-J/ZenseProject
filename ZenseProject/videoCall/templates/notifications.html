@@ -1,0 +1,74 @@
+{% extends 'layout.html' %}
+
+{% block title %} Notifications {% endblock title %}
+
+{% block style %}
+<style>
+    .heading {
+        text-align: center;
+        font-size: 28px;
+        color: #333;
+        margin-bottom: 50px;
+    }
+
+    .card-seen {
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        padding: 10px;
+        margin: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        background-color: #fff;
+    }
+
+    .card-unseen {
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        padding: 10px;
+        margin: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        background-color: #3d3db8;
+    }
+
+    .card-body {
+        font-size: 16px;
+        text-align: center;
+    }
+
+    h2 {
+        font-size: 24px;
+        color: #121212;
+    }
+
+    .timestamp {
+        font-size: 14px;
+        color: #777;
+        text-align: right;
+    }
+</style>
+
+{% endblock style %}
+
+{% block content %}
+<a href="{{ request.META.HTTP_REFERER }}">Go back to previous page</a>
+
+<h1 class="heading">Notifications</h1>
+<hr>
+{% for notification in unseen_notifications %}
+<div class="card-unseen">
+    <div class="card-body">
+        <h2>{{ notification.description }}</h2>
+        <div class="timestamp">{{ notification.created|date:"D M d Y" }} {{ notification.created|time:"H:i A" }}</div>
+    </div>
+</div>
+{% endfor %}
+
+{% for notification in seen_notifications %}
+<div class="card-seen">
+    <div class="card-body">
+        <h2>{{ notification.description }}</h2>
+        <div class="timestamp">{{ notification.created|date:"D M d Y" }} {{ notification.created|time:"H:i A" }}</div>
+    </div>
+</div>
+{% endfor %}
+
+{% endblock content %}

@@ -37,6 +37,18 @@ class Profile(models.Model):
     def __str__(self):
         return self.user.username
     
+class Notification(models.Model):
+    description=models.TextField()
+    seen=models.ManyToManyField(Profile,related_name='seen_notifications')
+    created=models.DateTimeField(auto_now_add=True)
+    profiles=models.ManyToManyField(Profile,related_name='all_notifications')
+
+    class Meta:
+        ordering = ['-created']
+
+    def __str__(self):
+        return self.description
+    
 class RoomMember(models.Model):
     name=models.ForeignKey(Profile,related_name='room',on_delete=models.CASCADE)
     uid=models.CharField(max_length=5)
