@@ -104,6 +104,9 @@ def addMember(request, group):
         if grp in profile.groups.all():
             messages.error(request,f'{name} is already in {group}')
             return redirect('videoCall:home')
+        
+        if request.POST.get("setting")=="ADMIN":
+            profile.admin.add(grp)
 
         profile.groups.add(grp)
         profile.save()

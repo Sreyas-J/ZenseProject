@@ -74,6 +74,12 @@
     {% csrf_token %}
     <label for="add_member">Member username</label>
     <input required type="text" name="member" list="member-list" />
+    <label for="permission">Setting</label>
+    <select name="setting">Setting
+        <option value="ADMIN">ADMIN</option>
+        <option value="MEMBER" selected>MEMBER</option>
+    </select>
+    <br>
     <button type="submit" name="action" value="Done">Add and Save</button>
     <button type="submit" name="action" value="Continue">Add and continue</button>
 </form>
