@@ -218,7 +218,7 @@
     {% for group in groups %}
     <div class="card">
         <div class="group">
-            {% if group.icon %}
+            {% if group.icon != "" %}
                 <img src="{{group.icon.url}}" height="40px" width="40px">
             {% endif %}
             <h2 class="group-name">{{ group.name }}</h2>

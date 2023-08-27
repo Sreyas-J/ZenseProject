@@ -76,7 +76,7 @@
 <a href="{{ request.META.HTTP_REFERER }}" class="goBack">Go Back</a>
 <h1>{{record}}</h1>
 <div class="video-container">
-    <video controls {% if group.icon %}poster="{{group.icon.url}}" {% endif %} class="video">
+    <video controls {% if group.icon != "" %}poster="{{group.icon.url}}" {% endif %} class="video">
         <source src="{{url}}" type="video/mp4">
         Your browser does not support the video tag.
     </video>

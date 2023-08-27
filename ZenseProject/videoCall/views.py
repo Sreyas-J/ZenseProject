@@ -39,12 +39,17 @@ def Token(request,group):
 
 def record(request,group):
     user=request.user
+    profile=Profile.objects.get(user=user)
+    grp=Group.objects.get(name=group)
+
+    if grp.setting=="ADMIN" and grp not in profile.admin.all():
+        return JsonResponse({'name':'You do not have permission to record','time':'You do not have permission to record'},safe=False)
+    
     uid=request.GET.get("uid")
     rec=Recording.objects.create(name=user.username,uid=uid)
     rec.name=f"{rec.name}_{rec.created.strftime('%Y_%m_%d_%H_%M%S')}"
     rec.save()
-
-    grp=Group.objects.get(name=group)
+ 
     grp.records.add(rec)
     grp.save()
 
@@ -58,6 +63,12 @@ def record(request,group):
     return JsonResponse({'name':rec.name,'time':rec.created},safe=False)
 
 def update_record(request,group):
+    user=request.user
+    profile=Profile.objects.get(user=user)
+    grp=Group.objects.get(name=group)
+
+    if grp.setting=="ADMIN" and grp not in profile.admin.all():
+        return JsonResponse({'name':'You do not have permission to record','time':'You do not have permission to record'},safe=False)
     try:
         SID=request.GET.get("sid")
         rec=Recording.objects.get(name=request.GET.get("rec_name"))
@@ -243,12 +254,12 @@ def view_recording(request,group,record):
     return redirect('videoCall:home')
 
 def remove_member(request,group,member):
+    send_notification(f'{member} has been removed from {group}',group)
     grp=Group.objects.get(name=group)
     profile=Profile.objects.get(user=User.objects.get(username=member))
     profile.groups.remove(grp)
     profile.save()
 
-    send_notification(f'{member} has been removed from {group}',group)
     return redirect('videoCall:home')
 
 def edit_recording(request,group,recording):

@@ -1,12 +1,13 @@
 const APP_ID = "41a16d737c284fadb182676757e070ab"
 const CHANNEL = sessionStorage.getItem('room')
+console.log("CHANNEL: ",CHANNEL)
 const TOKEN = sessionStorage.getItem('token')
 let UID = Number(sessionStorage.getItem('UID'))
 let NAME = sessionStorage.getItem('name')
 var rec_uid = null
 var rec_name=null
 
-const customerKey = "cd59f667dd18444b90508cdf17105741";
+const customerKey = "cd59f667dd18444b90508cdf17105741"; 
 const customerSecret = "188e65fe83944fad925e16fbe7f1b2f3";
 const credentials = customerKey + ":" + customerSecret;
 const base64Credentials = btoa(credentials);
