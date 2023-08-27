@@ -78,7 +78,7 @@ def home(request):
 @login_required(login_url='videoCall:login') 
 def room(request,group):
     grp=Group.objects.get(name=group)
-    return render(request,'room.html',{'group':grp})
+    return render(request,'room.html',{'group':grp,'profile':Profile.objects.get(user=request.user)})
 
 @login_required(login_url='videoCall:login')
 def addMember(request, group):
@@ -238,3 +238,14 @@ def remove_member(request,group,member):
     profile.groups.remove(grp)
     profile.save()
     return redirect('videoCall:home')
+
+def edit_recording(request,group,recording):
+    rec=Recording.objects.get(name=recording)
+    if request.method=="POST":
+        name=request.POST.get("name")
+        rec.name=name
+        rec.save()
+        messages.success(request,f'{recording} has been renamed to {name}')
+        return redirect('videoCall:home')
+
+    return render(request,'editRecording.html',context={"name":recording})

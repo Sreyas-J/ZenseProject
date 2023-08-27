@@ -94,9 +94,15 @@
       </div>
     </div>
 
+    {% if group.setting == "EVERYONE" %}
     <div class="record-button">
       <button id="start-stop-record-btn">Start Recording</button>
     </div>
+    {% elif group in profile.admin.all %} 
+    <div class="record-button">
+      <button id="start-stop-record-btn">Start Recording</button>
+    </div>
+    {% endif %}
 
   </div>
 

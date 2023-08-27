@@ -1,0 +1,10 @@
+{% extends 'form_template.html' %} 
+
+{% block title %} Edit Recording {% endblock title %}
+
+{% block form %} 
+<label for="recording">Name: </label>
+<input type="text" name="name" value="{{name}}"/>
+<br><br>
+<button type="submit">Rename</button>
+{% endblock form %}

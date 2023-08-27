@@ -136,13 +136,13 @@
         <div class="add-member-link">
             <a href="{% url 'videoCall:addMember' group=group.name %}">Add Member</a>
         </div>
-        {% endif %} 
+        {% endif %}
 
         {% if group.setting == "EVERYONE" %}
         <div class="add-doc-link">
             <a href="{% url 'videoCall:addDoc' group=group.name %}">Create Document</a>
         </div>
-        {% elif group in profile.admin.all %} 
+        {% elif group in profile.admin.all %}
         <div class="add-doc-link">
             <a href="{% url 'videoCall:addDoc' group=group.name %}">Create Document</a>
         </div>
@@ -166,6 +166,9 @@
                 <h3> Recording </h3>
                 {% for rec in group.records.all %}
                 <a href="{% url 'videoCall:view_recording' group=group.name record=rec.name %}">{{rec.name}}</a>
+                {% if rec in profile.recordings.all %} 
+                <a href="{% url 'videoCall:edit_recording' group=group recording=rec.name %}" class="images"><img src="{% static 'images/edit.png' %}" height="20px" width="20px"></a>
+                {% endif %}
                 <br>
                 {% endfor %}
             </div>
@@ -178,11 +181,11 @@
                 {% if group in member.admin.all %}
 
                 <p style="color: #ced1d4;">{{ member.user.username }}
-                {% else %}
+                    {% else %}
                 <p>{{ member.user.username }}
-                {% endif %}
+                    {% endif %}
 
-                    {% if group in profile.admin.all  or member == profile %}
+                    {% if group in profile.admin.all or member == profile %}
                     <a class="images"
                         href="{% url 'videoCall:remove_member' group=group.name member=member.user.username %}"><img
                             src="{% static 'images/remove.png' %}" height="20px" width="20px"></a>
