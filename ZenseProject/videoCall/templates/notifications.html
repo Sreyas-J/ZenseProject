@@ -59,6 +59,34 @@
         border: none;
         cursor: pointer;
     }
+
+    @media only screen and (max-width: 768px) {
+        .heading {
+            font-size: 22px;
+            margin-bottom: 30px;
+        }
+
+        .card-seen,
+        .card-unseen {
+            margin: 10px 0;
+        }
+
+        .card-body {
+            font-size: 14px;
+        }
+
+        h2 {
+            font-size: 20px;
+        }
+
+        .timestamp {
+            font-size: 12px;
+        }
+
+        a.goBack {
+            margin-top: 20px;
+        }
+    }
 </style>
 
 {% endblock style %}

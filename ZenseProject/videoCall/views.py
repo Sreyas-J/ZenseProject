@@ -64,6 +64,8 @@ def update_record(request,group):
         rec.sid=SID
         rec.save()
         print("sid: ",rec.sid)
+        send_notification(f'{rec.name} recording has been saved in {group}',group)
+
         return JsonResponse({"message": "Recording updated successfully"})
     except Recording.DoesNotExist:
         return JsonResponse({"error": "Recording not found"}, status=404)
@@ -94,8 +96,9 @@ def addMember(request, group):
 
         profile.groups.add(grp)
         profile.save()
+        
+        send_notification(f'{name} user has been added to {group}',group)
 
-        messages.success(request,f'{name} has been added to {group}')
         if request.POST.get("action")=="Done":
             print("done")
             return redirect('videoCall:home')
@@ -119,10 +122,10 @@ def addDoc(request,group):
             Document.objects.get(name=doc_name,groups=grp)
         except:
             document=Document.objects.create(name=doc_name,setting=request.POST.get("setting"))
-
             grp.doc.add(document)
             grp.save()
-            messages.success(request,f"{doc_name} has been created in {group}")
+            send_notification(f'Document {doc_name} has been added to {group}',group)
+            
             return redirect('videoCall:home')
         messages.error(request,f"Document with name:{doc_name} already exists in the group")
         return redirect('videoCall:addDoc',group=group)
@@ -210,7 +213,7 @@ def createGroup(request):
             profile.admin.add(grp)
             profile.save()
 
-            messages.success(request,f'{name} has been created')
+            send_notification(f'Group {name} has been created',name)
 
             return redirect("videoCall:addMember",group=name)
 
@@ -244,6 +247,8 @@ def remove_member(request,group,member):
     profile=Profile.objects.get(user=User.objects.get(username=member))
     profile.groups.remove(grp)
     profile.save()
+
+    send_notification(f'{member} has been removed from {group}',group)
     return redirect('videoCall:home')
 
 def edit_recording(request,group,recording):
@@ -252,7 +257,7 @@ def edit_recording(request,group,recording):
         name=request.POST.get("name")
         rec.name=name
         rec.save()
-        messages.success(request,f'{recording} has been renamed to {name}')
+        send_notification(f'{recording} recording has been renamed to {name} in {group}',group)
         return redirect('videoCall:home')
 
     return render(request,'editRecording.html',context={"name":recording})
@@ -278,3 +283,10 @@ def view_notifications(request):
     }
 
     return render(request, 'notifications.html', context)
+
+def send_notification(message,group):
+    notification=Notification.objects.create(description=message)
+    profiles=Profile.objects.filter(groups=Group.objects.get(name=group))
+    for profile in profiles:
+        notification.profiles.add(profile)
+        notification.save()

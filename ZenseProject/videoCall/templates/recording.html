@@ -43,6 +43,32 @@
     a.goBack:hover {
         background-color: #2980b9;
     }
+
+    @media only screen and (max-width: 768px) {
+        body {
+            height: auto;
+            padding: 20px;
+        }
+
+        h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .video {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .video-container {
+            margin-top: 20px;
+        }
+
+        a.goBack {
+            margin-top: 20px;
+        }
+    }
 </style>
 {% endblock style %}
 
