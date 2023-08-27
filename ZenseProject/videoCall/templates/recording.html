@@ -27,13 +27,30 @@
         height: auto;
         display: block;
     }
+
+    a.goBack {
+        display: inline-block;
+        padding: 10px 20px;
+        background-color: #3498db;
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+        border: none;
+        cursor: pointer;
+    }
+
+    /* Change color on hover */
+    a.goBack:hover {
+        background-color: #2980b9;
+    }
 </style>
 {% endblock style %}
 
 {% block content %}
+<a href="{{ request.META.HTTP_REFERER }}" class="goBack">Go Back</a>
 <h1>{{record}}</h1>
 <div class="video-container">
-    <video controls poster="{{group.icon.url}}" class="video">
+    <video controls {% if group.icon %}poster="{{group.icon.url}}" {% endif %} class="video">
         <source src="{{url}}" type="video/mp4">
         Your browser does not support the video tag.
     </video>

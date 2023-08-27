@@ -58,6 +58,7 @@
     button:hover {
         background-color: #0056b3;
     }
+
 </style>
 {% endblock style %}
 
@@ -67,7 +68,7 @@
 {{message}}
 {% endfor %}
 
-<a href="#" class="goBack" onclick="goBack()">Go Back</a>
+<a href="{{ request.META.HTTP_REFERER }}" class="goBack">Go Back</a>
 
 <form action="" method="post">
     {% csrf_token %}
@@ -84,11 +85,5 @@
         {% endfor %}
     </select>
 </datalist>
-
-<script>
-    function goBack() {
-        window.history.back();
-    }
-</script>
 
 {% endblock content %}

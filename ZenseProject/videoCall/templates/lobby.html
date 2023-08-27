@@ -1,47 +1,68 @@
-{% extends 'layout.html' %} 
+{% extends 'layout.html' %}
 
 {% load static %}
 
-{% block title %} Home {% endblock %} 
+{% block title %} Home {% endblock %}
 
-{% block content %} 
+{% block style %}
+<style>
+    a.goBack {
+        display: inline-block;
+        padding: 10px 20px;
+        background-color: #3498db;
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+        border: none;
+        cursor: pointer;
+    }
+
+    /* Change color on hover */
+    a.goBack:hover {
+        background-color: #2980b9;
+    }
+</style>
+{% endblock style %}
+
+{% block content %}
 
 <main>
+    <a href="{{ request.META.HTTP_REFERER }}" class="goBack">Go Back</a>
     <section id="form-container">
-<img src="{% static 'images/icon.png' %}" id="logo"/>
-<div id="welcome-message">
-    <h1>Welcome to</h1><b>{{room}}</b>
-    <p>{{user.username}}</p>
-</div>
+        <img src="{% static 'images/icon.png' %}" id="logo" />
+        <div id="welcome-message">
+            <h1>Welcome to</h1><b>{{room}}</b>
+            <p>{{user.username}}</p>
+        </div>
 
-<form id="form">
-    <div class="form-field">
-        <input type="submit" value="Join Stream"/>
-    </div>
-</form>
-</section>
+        <form id="form">
+            <div class="form-field">
+                <input type="submit" value="Join Stream" />
+            </div>
+        </form>
+    </section>
 </main>
 
 <script type="text/javascript">
     let form = document.getElementById('form');
-let welcomeMessage = document.getElementById('welcome-message'); // Select the welcome-message element
+    let welcomeMessage = document.getElementById('welcome-message'); // Select the welcome-message element
 
-let handleSubmit = async (e) => {
-    e.preventDefault();
-    
-    let room = welcomeMessage.querySelector('b').textContent;
-    let name= welcomeMessage.querySelector('p').textContent;
-    let response = await fetch(`get_token/?channel=${room}`);
-    let data = await response.json();
-    let UID = data.uid;
-    let token = data.token;
-    sessionStorage.setItem('UID', UID);
-    sessionStorage.setItem('token', token);
-    sessionStorage.setItem('room', room);
-    sessionStorage.setItem('name', name);
-    window.open(`/room/${room}/`, '_self');
-};
-form.addEventListener('submit', handleSubmit);
+    let handleSubmit = async (e) => {
+        e.preventDefault();
+
+        let room = welcomeMessage.querySelector('b').textContent;
+        let name = welcomeMessage.querySelector('p').textContent;
+        let response = await fetch(`get_token/?channel=${room}`);
+        let data = await response.json();
+        let UID = data.uid;
+        let token = data.token;
+        sessionStorage.setItem('UID', UID);
+        sessionStorage.setItem('token', token);
+        sessionStorage.setItem('room', room);
+        sessionStorage.setItem('name', name);
+        window.open(`/room/${room}/`, '_self');
+    };
+    form.addEventListener('submit', handleSubmit);
 
 </script>
 

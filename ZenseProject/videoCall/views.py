@@ -190,6 +190,7 @@ def createMember(request):
 def createGroup(request):
     if request.method=="POST":
         name=request.POST.get("group")
+        print(name)
 
         if Group.objects.filter(name=name).exists():
             messages.error(request,"This group already exists")
@@ -197,11 +198,13 @@ def createGroup(request):
         else:
             s3.put_object(Bucket=bucket, Key=f'{name}/')
             icon_file = request.FILES.get('icon')
-            icon_path = f'icon/{name}_{icon_file.name}'
-            icon_path = default_storage.save(icon_path, icon_file)
-
             profile=Profile.objects.get(user=request.user)
-            grp=Group.objects.create(name=name,setting=request.POST.get("setting"),icon=icon_path)
+            if icon_file:
+                icon_path = f'icon/{name}_{icon_file.name}'
+                icon_path = default_storage.save(icon_path, icon_file)
+                grp=Group.objects.create(name=name,setting=request.POST.get("setting"),icon=icon_path)
+            else:
+                grp=Group.objects.create(name=name,setting=request.POST.get("setting"))
 
             profile.groups.add(grp)
             profile.admin.add(grp)
