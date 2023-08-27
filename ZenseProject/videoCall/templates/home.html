@@ -84,6 +84,7 @@
     }
 
     .group {
+        text-align: center;
         margin: 0;
         padding: 10px;
         background-color: #007BFF;
@@ -92,6 +93,19 @@
         border-top-right-radius: 5px;
         width: 70%;
         margin-left: 200px;
+        display: flex;
+        align-items: center;
+    }
+
+    .group img {
+        margin-right: 10px;
+    }
+
+    .group h2 {
+        margin: 0;
+        /* Reset margin to remove default spacing */
+        flex: 1;
+        /* Allow the group name to take up remaining space */
     }
 
     .table {
@@ -116,28 +130,78 @@
     .images {
         padding-left: 50px;
     }
+
+    a.goBack:hover {
+        background-color: #2980b9;
+    }
+
+    a.goBack {
+        display: inline-block;
+        padding: 10px 20px;
+        background-color: #3498db;
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+        border: none;
+        cursor: pointer;
+    }
+
+    .notification-button {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 100;
+        /* Ensure it's on top of other content */
+    }
+
+    .group-name {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 10px;
+        font-size: 1.5em;
+        /* Adjust the font size as needed */
+    }
+
+    .heading {
+        text-align: center;
+        font-size: 28px;
+        color: #333;
+        margin-bottom: 50px;
+    }
 </style>
 {% endblock style %}
-
 
 {% block content %}
 {% for message in messages %}
 <p{% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</p>
-    {% endfor %}
+    {% endfor %} 
 
-    <a href="{% url 'videoCall:createGroup' %}">Create Group</a>
-    {% if notification == False %}
-    <a href="{% url 'videoCall:notification' %}"><img src="{% static 'images/no_notification.png' %}" height="40px" width="40px"></a>
-    {% else %} 
-    <a href="{% url 'videoCall:notification' %}"><img src="{% static 'images/notification.png' %}" height="40px" width="40px"></a>
-    {% endif %}
+    <a href="{% url 'videoCall:createGroup' %}" class="goBack">Create Group</a>
+    <a href="{% url 'videoCall:logout' %}" class="goBack" style="background-color: #b1091a;">Logout</a>
+    <div class="notification-button">
+        {% if notification == False %}
+        <a href="{% url 'videoCall:notification' %}">
+            <img src="{% static 'images/no_notification.png' %}" height="60px" width="60px">
+        </a>
+        {% else %}
+        <a href="{% url 'videoCall:notification' %}">
+            <img src="{% static 'images/notification.png' %}" height="60px" width="60px">
+        </a>
+        {% endif %}
+    </div>
+
+    <h1 class="heading"> Welcome {{profile.user.username}}</h1>
 
     {% for group in groups %}
     <div class="card">
         <div class="group">
-            <img src="{{group.icon.url}}" height="40px" width="40px">
+            {% if group.icon %}
+                <img src="{{group.icon.url}}" height="40px" width="40px">
+            {% endif %}
+            <h2 class="group-name">{{ group.name }}</h2>
             <a href="{% url 'videoCall:lobby' group=group.name %}">
-                <h2>{{ group.name }}</h2>
+                <img src="{% static 'images/call.png' %}" height="30px" width="30px">
             </a>
         </div>
         {% if group in profile.admin.all %}

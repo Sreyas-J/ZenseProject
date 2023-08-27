@@ -6,6 +6,7 @@ app_name = 'videoCall'
 
 urlpatterns=[
     path('',views.loginPage,name='login'),
+    path('logout/',views.logoutPage,name='logout'),
     path('home/',views.home,name='home'),
     path('signup/',views.signup,name='signup'),
     path('notification/',views.view_notifications,name='notification'),

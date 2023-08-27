@@ -44,12 +44,27 @@
         color: #777;
         text-align: right;
     }
+
+    a.goBack:hover {
+        background-color: #2980b9;
+    }
+
+    a.goBack {
+        display: inline-block;
+        padding: 10px 20px;
+        background-color: #3498db;
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+        border: none;
+        cursor: pointer;
+    }
 </style>
 
 {% endblock style %}
 
 {% block content %}
-<a href="{{ request.META.HTTP_REFERER }}">Go back to previous page</a>
+<a href="{{ request.META.HTTP_REFERER }}" class="goBack">Go back</a>
 
 <h1 class="heading">Notifications</h1>
 <hr>

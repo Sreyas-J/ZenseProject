@@ -166,6 +166,10 @@ def loginPage(request):
     
     return render(request, 'login.html')
 
+def logoutPage(request):
+    logout(request)
+    return redirect('videoCall:login')
+
 @login_required
 def lobby(request,group):
     print("Id: ",Id)

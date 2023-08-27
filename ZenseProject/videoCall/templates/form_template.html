@@ -64,7 +64,7 @@
 {{message}} 
 {% endfor %}
 
-<a href="#" class="goBack" onclick="goBack()">Go Back</a>
+<a href="{{ request.META.HTTP_REFERER }}" class="goBack">Go Back</a>
 
 <form action="" method="post" enctype="multipart/form-data">
     {% csrf_token %}
@@ -72,11 +72,5 @@
     
     {% endblock form %}
 </form>
-
-<script>
-    function goBack() {
-        window.history.back();
-    }
-</script>
 
 {% endblock content %}
