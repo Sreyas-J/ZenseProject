@@ -232,15 +232,10 @@
         </div>
         {% endif %}
 
-        {% if group.setting == "EVERYONE" %}
+        {% if group in profile.admin.all %}
         <div class="add-doc-link">
             <a href="{% url 'videoCall:addDoc' group=group.name %}">Create Document</a>
         </div>
-        {% elif group in profile.admin.all %}
-        <div class="add-doc-link">
-            <a href="{% url 'videoCall:addDoc' group=group.name %}">Create Document</a>
-        </div>
-
         {% endif %}
 
         <br>

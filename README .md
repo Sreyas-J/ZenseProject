@@ -27,6 +27,28 @@ The Agora API facilitates real-time video calls, while integration with AWS S3 e
 
 **Live Code Editing**
 Utilizing Quill JS for the text editor and WebSockets on the frontend, with Django Channels on the backend, the project enables real-time editing and code output display. Document content is stored in a Quill-compatible format in the database, which can be parsed as JSON data.
+
+## Installation
+
+**Clone the project**
+
+https://github.com/Sreyas-J/ZenseProject.git
+
+**Install required packages**
+
+pip install -r requirements.txt
+
+cd ZenseProject
+
+**Database Migrations**
+
+  python3 manage.py makemigrations
+
+  python3 manage.py migrate 
+
+**Start the server**
+
+  python3 manage.py runserver
 ## Code Documentation
 
 **ZenseProject**
@@ -92,6 +114,8 @@ Includes the remaining URLs for the website.
 **view_notifications:** Displays notifications, distinguishing between seen and unseen notifications on the frontend.
 
 **send_notification:** Creates and sends notifications to all members of a given group.
+
+The other views are straightforward.
 
 **templates/:-**
 
