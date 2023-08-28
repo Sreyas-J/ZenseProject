@@ -89,7 +89,7 @@
       <button class="dropbtn">Documents</button>
       <div class="dropdown-content">
         {% for doc in group.doc.all %}
-        <a href="{% url 'liveEdit:doc' group=group doc=doc %}">{{doc.name}}</a>
+        <a href="{% url 'liveEdit:doc' group=group doc=doc %}" target="_blank">{{doc.name}}</a>
         {% endfor %}
       </div>
     </div>
