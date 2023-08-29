@@ -1,6 +1,5 @@
 const APP_ID = "41a16d737c284fadb182676757e070ab"
 const CHANNEL = sessionStorage.getItem('room')
-console.log("CHANNEL: ",CHANNEL)
 const TOKEN = sessionStorage.getItem('token')
 let UID = Number(sessionStorage.getItem('UID'))
 let NAME = sessionStorage.getItem('name')
@@ -21,7 +20,6 @@ var resourceId = null
 
 let localTracks = []
 let remoteUsers = {}
-console.log(`${TOKEN}`)
 
 let joinAndDisplayLocalStream = async () => {
     document.getElementById('room-name').innerText = CHANNEL
@@ -31,7 +29,6 @@ let joinAndDisplayLocalStream = async () => {
     try {
         await client.join(APP_ID, CHANNEL, TOKEN, UID)
     } catch (error) {
-        console.error(error)
         window.open('/', '_self')
     }
 
@@ -171,19 +168,15 @@ const acquireCloudRecording = async (rec_uid) => {
 
     if (response.ok) {
         const responseData = await response.json();
-        console.log('Response data:', responseData);
         return responseData // Return the acquired resource ID
     } else {
-        console.error('Error acquiring cloud recording resource');
         const errorResponse = await response.text(); // Get the error response as text
-        console.log('Error response:', errorResponse);
         return null;
     }
 };
 
 // Function to start cloud recording
 const startCloudRecording = async (resourceId, rec_uid, rec_token) => {
-    console.log("resource id: ", resourceId, " , app id: ", APP_ID,"rec name: ",rec_name)
     const startEndpoint = `https://api.agora.io/v1/apps/${APP_ID}/cloud_recording/resourceid/${resourceId}/mode/mix/start`;
 
     const requestBody = {
@@ -226,7 +219,6 @@ const startCloudRecording = async (resourceId, rec_uid, rec_token) => {
             }
         }
     };
-    console.log("body: ", JSON.stringify(requestBody))
 
     const response = await fetch(startEndpoint, {
         method: 'POST',
@@ -237,15 +229,12 @@ const startCloudRecording = async (resourceId, rec_uid, rec_token) => {
     if (response.ok) {
         const responseData = await response.json();
         sid = responseData['sid']
-        console.log('Recording started:', sid);
 
         await fetch(`http://127.0.0.1:8000/update_recording/${CHANNEL}/?rec_name=${rec_name}&sid=${sid}`);
 
         return sid
     } else {
-        console.error('Error starting cloud recording');
         const errorResponse = await response.text(); // Get the error response as text
-        console.log('Error response:', errorResponse);
     }
     return null
 };
@@ -267,11 +256,8 @@ const stopCloudRecording = async (sid, resourceId, rec_uid) => {
     });
 
     if (response.ok) {
-        console.log('Recording stopped successfully');
     } else {
-        console.error('Error stopping cloud recording');
         const errorResponse = await response.json(); // Get the error response as JSON
-        console.log('Error response:', errorResponse);
     }
 };
 
@@ -291,10 +277,7 @@ document.getElementById('start-stop-record-btn').addEventListener('click', async
         resourceId = data.resourceId;
 
         if (resourceId) {
-            console.log('Resource ID acquired:', resourceId);
             sid = await startCloudRecording(resourceId, rec_uid, rec_token); // Start recording after acquiring resource ID
-        } else {
-            console.error('Failed to acquire resource ID');
         }
     }
     else {

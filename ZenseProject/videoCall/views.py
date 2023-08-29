@@ -27,7 +27,7 @@ expirationTime=3600*24
 role=1
 
 s3 = boto3.client('s3', aws_access_key_id=os.getenv("Access_key_ID", None), aws_secret_access_key=os.getenv("Secret_access_key", None), region_name='ap-south-1')
-bucket='zense-project-videocall-recording'
+bucket=os.getenv("bucket",None)
 
 def Token(request,group):
     channel=group
@@ -58,7 +58,6 @@ def record(request,group):
     profile.save()
 
     s3.put_object(Bucket=bucket, Key=f'{group}/{user.username}/{uid}/')
-    print(f'{group}/{rec.name}/')
 
     return JsonResponse({'name':rec.name,'time':rec.created},safe=False)
 
@@ -74,7 +73,6 @@ def update_record(request,group):
         rec=Recording.objects.get(name=request.GET.get("rec_name"))
         rec.sid=SID
         rec.save()
-        print("sid: ",rec.sid)
         send_notification(f'{rec.name} recording has been saved in {group}',group)
 
         return JsonResponse({"message": "Recording updated successfully"})
@@ -114,7 +112,6 @@ def addMember(request, group):
         send_notification(f'{name} user has been added to {group}',group)
 
         if request.POST.get("action")=="Done":
-            print("done")
             return redirect('videoCall:home')
         else:
             return redirect('videoCall:addMember',group=group)
@@ -189,7 +186,6 @@ def logoutPage(request):
 
 @login_required
 def lobby(request,group):
-    print("Id: ",Id)
     return render(request,'lobby.html',{'room':group,'user':request.user,'id':Id,'customerKey':os.getenv("customerKey", None),'customerSecret':os.getenv("customerSecret", None)})
 
 @csrf_exempt
@@ -207,7 +203,6 @@ def createMember(request):
 def createGroup(request):
     if request.method=="POST":
         name=request.POST.get("group")
-        print(name)
 
         if Group.objects.filter(name=name).exists():
             messages.error(request,"This group already exists")
@@ -250,7 +245,6 @@ def get_presigned_url(group,recording):
     
 def view_recording(request,group,record):
     url=get_presigned_url(group,record)
-    print(url)
     if url:
         return render(request,"recording.html",{"url":url,"record":record,"group":Group.objects.get(name=group)})
     messages.error(request,"This recording doesn't exist")
