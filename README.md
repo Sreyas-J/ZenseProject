@@ -1,4 +1,4 @@
-# Sync,Clip,Edit
+# COLLABFLOW
 
 **Problem Statement:**
 Existing solutions lack a user-friendly platform that integrates video calling, real-time document editing, collaborative coding, and secure recordings. There is a need for an organized solution with these features that is easy-to-use.
